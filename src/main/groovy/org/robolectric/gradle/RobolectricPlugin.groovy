@@ -7,17 +7,56 @@ import org.gradle.api.Project
 
 class RobolectricPlugin implements Plugin<Project> {
   void apply(Project project) {
-    // Ensure the Android plugin has been added.
     def hasAppPlugin = project.plugins.hasPlugin(AppPlugin.class)
     def hasLibraryPlugin = project.plugins.hasPlugin(LibraryPlugin.class)
+
+    // Ensure the Android plugin has been added in app or library form, but not both.
     if (!hasAppPlugin && !hasLibraryPlugin) {
       throw new IllegalStateException("The 'android' or 'android-library' plugin is required.")
+    } else if (hasAppPlugin && hasLibraryPlugin) {
+      throw new IllegalStateException(
+          "Having both 'android' and 'android-library' plugin is not supported.")
     }
 
-    project.android.testVariants.each { variant ->
-      // TODO
-      println variant.getTestVariant().getName()
-      // TODO
+    def android = project.android
+    def variants = hasAppPlugin ? android.applicationVariants : android.libraryVariants
+
+    variants.all { variant ->
+      // Get the build type name (e.g., "Debug", "Release").
+      def buildTypeName = variant.buildType.name.capitalize()
+
+      def projectFlavorNames = [""]
+      if (hasAppPlugin) {
+        // Flavors are only available for the app plugin (e.g., "Free", "Paid").
+        projectFlavorNames = variant.productFlavors.collect { it.name.capitalize() }
+        if (projectFlavorNames.isEmpty()) {
+          projectFlavorNames = [""]
+        }
+      }
+
+      projectFlavorNames.each { projectFlavorName ->
+        // The combination of flavor and type yield a unique "variation". This value is used for
+        // looking up existing associated tasks as well as naming the task we are about to create.
+        def variationName = "${projectFlavorName}${buildTypeName}"
+
+        // Grab the task which outputs the merged manifest for this flavor.
+        def manifestTask = project.tasks.getByName("process${variationName}Manifest")
+
+        def taskName = "robolectric${variationName}"
+        def testTask = project.tasks.create(taskName) << {
+          println "----------------------------------------"
+          println "buildTypeName: ${buildTypeName}"
+          println "variationName: ${variationName}"
+          println "taskName: ${taskName}"
+          println "manifest: " + manifestTask.manifestOutputFile
+          println "----------------------------------------"
+        }
+
+        // Depend on the project compilation (which itself depends on the manifest processing task).
+        testTask.dependsOn project.tasks.getByName("compile${variationName}")
+        // Add our new task to Gradle's standard "check" task.
+        project.tasks.check.dependsOn testTask
+      }
     }
   }
 }

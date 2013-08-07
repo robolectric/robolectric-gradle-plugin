@@ -1,0 +1,27 @@
+buildscript {
+  dependencies {
+    repositories {
+      mavenCentral()
+      mavenLocal()
+    }
+
+    classpath 'com.android.tools.build:gradle:0.5.+'
+    classpath 'org.robolectric:gradle:1.0-SNAPSHOT'
+  }
+}
+
+dependencies {
+  repositories {
+    mavenCentral()
+  }
+
+  // TODO test classpath!
+}
+
+apply plugin: 'android-library'
+apply plugin: 'robolectric'
+
+android {
+  compileSdkVersion 18
+  buildToolsVersion '18.0.1'
+}
