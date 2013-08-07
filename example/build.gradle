@@ -10,16 +10,18 @@ buildscript {
   }
 }
 
+apply plugin: 'android-library'
+apply plugin: 'robolectric'
+
 dependencies {
   repositories {
     mavenCentral()
   }
 
+  compile 'com.android.support:support-v4:18.0+'
+
   // TODO test classpath!
 }
-
-apply plugin: 'android-library'
-apply plugin: 'robolectric'
 
 android {
   compileSdkVersion 18

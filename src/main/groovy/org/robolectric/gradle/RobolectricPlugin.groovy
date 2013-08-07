@@ -51,7 +51,8 @@ class RobolectricPlugin implements Plugin<Project> {
           println "variationName: ${variationName}"
           println "taskName: ${taskName}"
           println "manifest: ${processManifestTask.manifestOutputFile}"
-          println "classpath: ${javaCompile.classpath}"
+          println "classpath: ${javaCompileTask.classpath.asPath}"
+          println "desination dir: ${javaCompileTask.destinationDir}"
           println "----------------------------------------"
         }
 
