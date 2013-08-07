@@ -40,7 +40,9 @@ class RobolectricPlugin implements Plugin<Project> {
         def variationName = "${projectFlavorName}${buildTypeName}"
 
         // Grab the task which outputs the merged manifest for this flavor.
-        def manifestTask = project.tasks.getByName("process${variationName}Manifest")
+        def processManifestTask = variant.processManifest;
+        // Grab the java compilation task for classpath and task dependency.
+        def javaCompileTask = variant.javaCompile;
 
         def taskName = "robolectric${variationName}"
         def testTask = project.tasks.create(taskName) << {
@@ -48,12 +50,13 @@ class RobolectricPlugin implements Plugin<Project> {
           println "buildTypeName: ${buildTypeName}"
           println "variationName: ${variationName}"
           println "taskName: ${taskName}"
-          println "manifest: " + manifestTask.manifestOutputFile
+          println "manifest: ${processManifestTask.manifestOutputFile}"
+          println "classpath: ${javaCompile.classpath}"
           println "----------------------------------------"
         }
 
         // Depend on the project compilation (which itself depends on the manifest processing task).
-        testTask.dependsOn project.tasks.getByName("compile${variationName}")
+        testTask.dependsOn javaCompileTask
         // Add our new task to Gradle's standard "check" task.
         project.tasks.check.dependsOn testTask
       }
