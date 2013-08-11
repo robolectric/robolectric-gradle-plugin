@@ -20,7 +20,7 @@ dependencies {
 
   compile 'com.android.support:support-v4:18.0+'
 
-  // TODO test classpath!
+  test 'com.squareup:fest-android:1.0.5'
 }
 
 android {

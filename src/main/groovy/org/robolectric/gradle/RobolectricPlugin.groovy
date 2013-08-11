@@ -4,11 +4,16 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.api.tasks.testing.Test
 
 class RobolectricPlugin implements Plugin<Project> {
   void apply(Project project) {
-    def hasAppPlugin = project.plugins.hasPlugin(AppPlugin.class)
-    def hasLibraryPlugin = project.plugins.hasPlugin(LibraryPlugin.class)
+    def hasAppPlugin = project.plugins.hasPlugin AppPlugin
+    def hasLibraryPlugin = project.plugins.hasPlugin LibraryPlugin
 
     // Ensure the Android plugin has been added in app or library form, but not both.
     if (!hasAppPlugin && !hasLibraryPlugin) {
@@ -18,6 +23,25 @@ class RobolectricPlugin implements Plugin<Project> {
           "Having both 'android' and 'android-library' plugin is not supported.")
     }
 
+    // Create the 'test' configuration for test-only dependencies.
+    def testConfiguration = project.configurations.create('test')
+    // Add a dependency on the latest Robolectric.
+    project.dependencies.add('test', 'org.robolectric:robolectric:2.1.+')
+    // Make the 'test' configuration extend from the normal 'compile' configuration.
+    testConfiguration.extendsFrom project.configurations.getByName('compile')
+
+    // Apply the base of the 'java' plugin so source set and java compilation is easier.
+    project.plugins.apply JavaBasePlugin
+    JavaPluginConvention javaConvention = project.convention.getPlugin JavaPluginConvention
+
+    // Create a root 'robolectric' task for running all unit tests.
+    def robolectricTask = project.tasks.create 'robolectric'
+    robolectricTask.description = 'Run unit tests using Robolectric'
+    robolectricTask.group = JavaBasePlugin.VERIFICATION_GROUP
+    // Add our new task to Gradle's standard "check" task.
+    project.tasks.check.dependsOn robolectricTask
+
+    def log = project.logger
     def android = project.android
     def variants = hasAppPlugin ? android.applicationVariants : android.libraryVariants
 
@@ -37,29 +61,48 @@ class RobolectricPlugin implements Plugin<Project> {
       projectFlavorNames.each { projectFlavorName ->
         // The combination of flavor and type yield a unique "variation". This value is used for
         // looking up existing associated tasks as well as naming the task we are about to create.
-        def variationName = "${projectFlavorName}${buildTypeName}"
+        def variationName = "$projectFlavorName$buildTypeName"
+        def variationTestDir = "test$variationName"
+
+        def taskCompileName = "robolectricCompile$variationName"
+        def taskRunName = "robolectric$variationName"
 
         // Grab the task which outputs the merged manifest for this flavor.
-        def processManifestTask = variant.processManifest;
+        def processManifestTask = variant.processManifest
         // Grab the java compilation task for classpath and task dependency.
-        def javaCompileTask = variant.javaCompile;
+        def javaCompileTask = variant.javaCompile
 
-        def taskName = "robolectric${variationName}"
-        def testTask = project.tasks.create(taskName) << {
-          println "----------------------------------------"
-          println "buildTypeName: ${buildTypeName}"
-          println "variationName: ${variationName}"
-          println "taskName: ${taskName}"
-          println "manifest: ${processManifestTask.manifestOutputFile}"
-          println "classpath: ${javaCompileTask.classpath.asPath}"
-          println "desination dir: ${javaCompileTask.destinationDir}"
-          println "----------------------------------------"
-        }
+        SourceSet variationSources = javaConvention.sourceSets.create taskRunName
+        variationSources.java.srcDirs project.file('src/test/java'),
+            project.file("src/$variationTestDir/java")
 
+        // TODO change to 'debug' when finished
+        log.info("----------------------------------------")
+        log.info("buildTypeName: $buildTypeName")
+        log.info("variationName: $variationName")
+        log.info("taskCompileName: $taskCompileName")
+        log.info("taskRunName: $taskRunName")
+        log.info("manifest: $processManifestTask.manifestOutputFile")
+        log.info("sources: $variationSources.java.asPath")
+        log.info("----------------------------------------")
+
+        // Create a task which compiles the test sources.
+        def testCompileTask = project.tasks.create(taskCompileName, JavaCompile)
         // Depend on the project compilation (which itself depends on the manifest processing task).
-        testTask.dependsOn javaCompileTask
-        // Add our new task to Gradle's standard "check" task.
-        project.tasks.check.dependsOn testTask
+        testCompileTask.dependsOn javaCompileTask
+        testCompileTask.classpath = testConfiguration
+        testCompileTask.source = variationSources.java
+        testCompileTask.destinationDir =
+            project.file("$project.buildDir/robolectric/$variant.dirName")
+
+        // Create a task which runs the compiled test classes.
+        def testRunTask = project.tasks.create(taskRunName, Test)
+        testRunTask.dependsOn testCompileTask
+        testRunTask.classpath = testConfiguration // TODO + compiled sources
+        testRunTask.testClassesDir = testCompileTask.destinationDir
+        // TODO configure properly
+
+        robolectricTask.dependsOn testRunTask
       }
     }
   }
