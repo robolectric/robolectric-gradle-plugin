@@ -102,6 +102,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         testCompileTask.source = variationSources.java
         testCompileTask.destinationDir = testDestinationDir.getSingleFile()
 
+        // Clear out the group/description of the classes plugin so it's not top-level.
         def testClassesTask = project.tasks.getByName variationSources.classesTaskName
         testClassesTask.group = null
         testClassesTask.description = null
