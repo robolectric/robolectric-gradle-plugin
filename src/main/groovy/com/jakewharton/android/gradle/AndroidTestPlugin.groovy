@@ -49,6 +49,7 @@ class AndroidTestPlugin implements Plugin<Project> {
 
     def variants = hasAppPlugin ? project.android.applicationVariants :
         project.android.libraryVariants
+
     variants.all { variant ->
       if (variant.buildType.name.equals(BuilderConstants.RELEASE)) {
         log.debug("Skipping release build type.")
