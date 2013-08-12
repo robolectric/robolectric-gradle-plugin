@@ -20,7 +20,9 @@ dependencies {
 
   compile 'com.android.support:support-v4:18.0+'
 
-  test 'com.squareup:fest-android:1.0.5'
+  test 'junit:junit:4.10'
+  test 'org.robolectric:robolectric:2.1.+'
+  test 'com.squareup:fest-android:1.0.+'
 }
 
 android {
