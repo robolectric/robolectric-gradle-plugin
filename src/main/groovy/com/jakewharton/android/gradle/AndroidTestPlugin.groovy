@@ -78,7 +78,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         def javaCompileTask = variant.javaCompile
 
         SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
-        variationSources.java.srcDirs project.files('src/test/java'),
+        variationSources.java.srcDirs project.file('src/test/java'),
             project.file("src/$buildTypeTestDir/java"),
             project.file("src/$flavorTestDir/java")
 
