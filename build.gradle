@@ -1,5 +1,16 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.2'
+  }
+}
+
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: 'nexus'
 
 group = 'com.jakewharton'
 version = '1.0-SNAPSHOT'
