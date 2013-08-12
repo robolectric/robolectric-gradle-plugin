@@ -114,7 +114,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         testRunTask.testClassesDir = testCompileTask.destinationDir
         testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
         testRunTask.description = "Run unit tests for Build '$variationName'."
-        testRunTask.testReportDir =
+        testRunTask.reports.html.destination =
             project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
 
         // Add the path to the correct manifest as a system property.
