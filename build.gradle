@@ -12,7 +12,7 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'nexus'
 
-group = 'com.jakewharton'
+group = 'com.squareup'
 version = '1.0-SNAPSHOT'
 
 dependencies {
