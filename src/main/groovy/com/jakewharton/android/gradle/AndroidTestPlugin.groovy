@@ -12,6 +12,10 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
 
 class AndroidTestPlugin implements Plugin<Project> {
+  private static final String TEST_TASK_NAME = 'test'
+  private static final String TEST_CLASSES_DIR = 'test-classes'
+  private static final String TEST_REPORT_DIR = 'test-report'
+
   void apply(Project project) {
     def hasAppPlugin = project.plugins.hasPlugin AppPlugin
     def hasLibraryPlugin = project.plugins.hasPlugin LibraryPlugin
@@ -34,8 +38,8 @@ class AndroidTestPlugin implements Plugin<Project> {
     JavaPluginConvention javaConvention = project.convention.getPlugin JavaPluginConvention
 
     // Create a root 'test' task for running all unit tests.
-    def testTask = project.tasks.create('test', TestReport)
-    testTask.destinationDir = project.file("$project.buildDir/test-report")
+    def testTask = project.tasks.create(TEST_TASK_NAME, TestReport)
+    testTask.destinationDir = project.file("$project.buildDir/$TEST_REPORT_DIR")
     testTask.description = 'Runs all unit tests.'
     testTask.group = JavaBasePlugin.VERIFICATION_GROUP
     // Add our new task to Gradle's standard "check" task.
@@ -90,7 +94,8 @@ class AndroidTestPlugin implements Plugin<Project> {
         log.debug("test sources: $variationSources.java.asPath")
         log.debug("----------------------------------------")
 
-        def testDestinationDir = project.files("$project.buildDir/test-classes/$variant.dirName")
+        def testDestinationDir = project.files(
+            "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
 
         // Create a task which compiles the test sources.
         def testCompileTask = project.tasks.getByName variationSources.compileJavaTaskName
@@ -108,14 +113,17 @@ class AndroidTestPlugin implements Plugin<Project> {
         testClassesTask.description = null
 
         // Create a task which runs the compiled test classes.
-        def taskRunName = "test$variationName"
+        def taskRunName = "$TEST_TASK_NAME$variationName"
         def testRunTask = project.tasks.create(taskRunName, Test)
         testRunTask.dependsOn testClassesTask
         testRunTask.classpath = testConfiguration.plus testDestinationDir
         testRunTask.testClassesDir = testCompileTask.destinationDir
         testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
         testRunTask.description = "Run unit tests for Build '$variationName'."
-        testRunTask.testReportDir = project.file("$project.buildDir/test-report/$variant.dirName")
+        testRunTask.testReportDir =
+            project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
+
+        // Add the path to the correct manifest as a system property.
         testRunTask.systemProperties.put('android.manifest', processManifestTask.manifestOutputFile)
 
         testTask.reportOn testRunTask
