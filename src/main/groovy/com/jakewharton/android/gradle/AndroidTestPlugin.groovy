@@ -25,7 +25,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     }
 
     // Create the 'test' configuration for test-only dependencies.
-    def testConfiguration = project.configurations.create('test')
+    def testConfiguration = project.configurations.create('testCompile')
     // Make the 'test' configuration extend from the normal 'compile' configuration.
     testConfiguration.extendsFrom project.configurations.getByName('compile')
 
