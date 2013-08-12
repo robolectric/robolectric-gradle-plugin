@@ -26,8 +26,10 @@ Write your tests in `src/test/java/`! You can also add per-build type and per-fl
 the same folder naming conventions (e.g., `src/testFree/java/`, `src/testDebug/java/`).
 
 
-Testing
--------
+Plugin Development
+------------------
+
+The `example/` dir contains a project which covers a few configurations for the plugin to work with.
 
  1. Run `./gradlew install` in the root. This will build the plugin and install it into a local Maven
     repository.
