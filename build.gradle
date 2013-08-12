@@ -42,3 +42,31 @@ uploadArchives {
 task wrapper(type: Wrapper) {
   gradleVersion = '1.7'
 }
+
+modifyPom {
+  project {
+    name 'Gradle Android Unit Test Plugin'
+    description "A Gradle plugin which enables good 'ol fashioned unit tests for Android builds."
+    url 'https://github.com/square/gradle-android-test-plugin'
+    inceptionYear '2013'
+
+    scm {
+      url 'https://github.com/square/gradle-android-test-plugin'
+      connection 'scm:git:git://github.com/square/gradle-android-test-plugin.git'
+      developerConnection 'scm:git:ssh://git@github.com/square/gradle-android-test-plugin.git'
+    }
+
+    licenses {
+      license {
+        name 'The Apache Software License, Version 2.0'
+        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        distribution 'repo'
+      }
+    }
+
+    organization {
+      name 'Square, Inc.'
+      url 'http://squareup.com'
+    }
+  }
+}
