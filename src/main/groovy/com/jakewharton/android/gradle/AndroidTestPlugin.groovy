@@ -72,11 +72,8 @@ class AndroidTestPlugin implements Plugin<Project> {
         // The combination of flavor and type yield a unique "variation". This value is used for
         // looking up existing associated tasks as well as naming the task we are about to create.
         def variationName = "$projectFlavorName$buildTypeName"
-
         // Grab the task which outputs the merged manifest for this flavor.
         def processedManifestPath = variant.processManifest.manifestOutputFile
-        // Grab the java compilation task for classpath and task dependency.
-        def javaCompileTask = variant.javaCompile
 
         SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
         variationSources.java.srcDirs project.file("src/$TEST_DIR/java"),
@@ -97,7 +94,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         // Create a task which compiles the test sources.
         def testCompileTask = project.tasks.getByName variationSources.compileJavaTaskName
         // Depend on the project compilation (which itself depends on the manifest processing task).
-        testCompileTask.dependsOn javaCompileTask
+        testCompileTask.dependsOn variant.javaCompile
         testCompileTask.group = null
         testCompileTask.description = null
         testCompileTask.classpath = testConfiguration
