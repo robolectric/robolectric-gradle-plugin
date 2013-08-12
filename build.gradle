@@ -38,3 +38,7 @@ uploadArchives {
     pom.artifactId = 'gradle-android-test'
   }
 }
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '1.7'
+}
