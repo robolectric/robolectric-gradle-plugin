@@ -2,6 +2,7 @@ package org.robolectric.gradle
 
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
+import com.android.builder.BuilderConstants
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -45,6 +46,10 @@ class RobolectricPlugin implements Plugin<Project> {
     def variants = hasAppPlugin ? android.applicationVariants : android.libraryVariants
 
     variants.all { variant ->
+      if (variant.buildType.name.equals(BuilderConstants.RELEASE)) {
+        log.debug("Skipping release build type.")
+        return;
+      }
 
       // Get the build type name (e.g., "Debug", "Release").
       def buildTypeName = variant.buildType.name.capitalize()
@@ -54,6 +59,7 @@ class RobolectricPlugin implements Plugin<Project> {
       if (hasAppPlugin) {
         // Flavors are only available for the app plugin (e.g., "Free", "Paid").
         projectFlavorNames = variant.productFlavors.collect { it.name.capitalize() }
+        // TODO support flavor groups... ugh
         if (projectFlavorNames.isEmpty()) {
           projectFlavorNames = [""]
         }
