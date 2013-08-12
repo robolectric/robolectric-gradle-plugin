@@ -1,7 +1,7 @@
 Gradle Android Unit Testing Plugin
 ==================================
 
-TODO
+A Gradle plugin which enables good 'ol fashioned unit tests for Android builds.
 
 
 Testing
