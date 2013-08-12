@@ -82,14 +82,13 @@ class RobolectricPlugin implements Plugin<Project> {
             project.file("src/$buildTypeTestDir/java"),
             project.file("src/$flavorTestDir/java")
 
-        // TODO change to 'debug' when finished
-        log.info("----------------------------------------")
-        log.info("build type name: $buildTypeName")
-        log.info("project flavor name: $projectFlavorName")
-        log.info("variation name: $variationName")
-        log.info("manifest: $processManifestTask.manifestOutputFile")
-        log.info("test sources: $variationSources.java.asPath")
-        log.info("----------------------------------------")
+        log.debug("----------------------------------------")
+        log.debug("build type name: $buildTypeName")
+        log.debug("project flavor name: $projectFlavorName")
+        log.debug("variation name: $variationName")
+        log.debug("manifest: $processManifestTask.manifestOutputFile")
+        log.debug("test sources: $variationSources.java.asPath")
+        log.debug("----------------------------------------")
 
         def testDestinationDir = project.files("$project.buildDir/test-classes/$variant.dirName")
 
