@@ -10,7 +10,7 @@ buildscript {
   }
 }
 
-apply plugin: 'android-library'
+apply plugin: 'android'
 apply plugin: 'robolectric'
 
 dependencies {
@@ -26,4 +26,9 @@ dependencies {
 android {
   compileSdkVersion 18
   buildToolsVersion '18.0.1'
+
+  productFlavors {
+    free
+    paid
+  }
 }

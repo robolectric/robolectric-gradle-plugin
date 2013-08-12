@@ -7,7 +7,6 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
-import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 
 class RobolectricPlugin implements Plugin<Project> {
@@ -36,7 +35,7 @@ class RobolectricPlugin implements Plugin<Project> {
 
     // Create a root 'robolectric' task for running all unit tests.
     def robolectricTask = project.tasks.create 'robolectric'
-    robolectricTask.description = 'Run unit tests using Robolectric'
+    robolectricTask.description = 'Runs all unit tests using Robolectric.'
     robolectricTask.group = JavaBasePlugin.VERIFICATION_GROUP
     // Add our new task to Gradle's standard "check" task.
     project.tasks.check.dependsOn robolectricTask
@@ -46,8 +45,10 @@ class RobolectricPlugin implements Plugin<Project> {
     def variants = hasAppPlugin ? android.applicationVariants : android.libraryVariants
 
     variants.all { variant ->
+
       // Get the build type name (e.g., "Debug", "Release").
       def buildTypeName = variant.buildType.name.capitalize()
+      def buildTypeTestDir = "test$buildTypeName"
 
       def projectFlavorNames = [""]
       if (hasAppPlugin) {
@@ -59,10 +60,11 @@ class RobolectricPlugin implements Plugin<Project> {
       }
 
       projectFlavorNames.each { projectFlavorName ->
+        def flavorTestDir = "test$projectFlavorName"
+
         // The combination of flavor and type yield a unique "variation". This value is used for
         // looking up existing associated tasks as well as naming the task we are about to create.
         def variationName = "$projectFlavorName$buildTypeName"
-        def variationTestDir = "test$variationName"
 
         def taskCompileName = "robolectricCompile$variationName"
         def taskRunName = "robolectric$variationName"
@@ -74,7 +76,8 @@ class RobolectricPlugin implements Plugin<Project> {
 
         SourceSet variationSources = javaConvention.sourceSets.create taskRunName
         variationSources.java.srcDirs project.file('src/test/java'),
-            project.file("src/$variationTestDir/java")
+            project.file("src/$buildTypeTestDir/java"),
+            project.file("src/$flavorTestDir/java")
 
         // TODO change to 'debug' when finished
         log.info("----------------------------------------")
@@ -87,17 +90,23 @@ class RobolectricPlugin implements Plugin<Project> {
         log.info("----------------------------------------")
 
         // Create a task which compiles the test sources.
-        def testCompileTask = project.tasks.create(taskCompileName, JavaCompile)
+        def testCompileTask = project.tasks.getByName variationSources.compileJavaTaskName
         // Depend on the project compilation (which itself depends on the manifest processing task).
         testCompileTask.dependsOn javaCompileTask
+        testCompileTask.group = null
+        testCompileTask.description = null
         testCompileTask.classpath = testConfiguration
         testCompileTask.source = variationSources.java
         testCompileTask.destinationDir =
-            project.file("$project.buildDir/robolectric/$variant.dirName")
+            project.file "$project.buildDir/robolectric/$variant.dirName"
+
+        def testClassesTask = project.tasks.getByName variationSources.classesTaskName
+        testClassesTask.group = null
+        testClassesTask.description = null
 
         // Create a task which runs the compiled test classes.
         def testRunTask = project.tasks.create(taskRunName, Test)
-        testRunTask.dependsOn testCompileTask
+        testRunTask.dependsOn testClassesTask
         testRunTask.classpath = testConfiguration // TODO + compiled sources
         testRunTask.testClassesDir = testCompileTask.destinationDir
         // TODO configure properly
