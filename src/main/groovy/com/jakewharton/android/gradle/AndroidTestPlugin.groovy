@@ -1,4 +1,4 @@
-package org.robolectric.gradle
+package com.jakewharton.android.gradle
 
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
@@ -11,7 +11,7 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
 
-class RobolectricPlugin implements Plugin<Project> {
+class AndroidTestPlugin implements Plugin<Project> {
   void apply(Project project) {
     def hasAppPlugin = project.plugins.hasPlugin AppPlugin
     def hasLibraryPlugin = project.plugins.hasPlugin LibraryPlugin

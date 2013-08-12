@@ -1,7 +1,7 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
-group = 'org.robolectric'
+group = 'com.jakewharton'
 version = '1.0-SNAPSHOT'
 
 dependencies {
@@ -19,11 +19,11 @@ dependencies {
 
 install {
   repositories.mavenInstaller {
-    pom.artifactId = 'gradle'
+    pom.artifactId = 'gradle-android-test'
   }
 }
 uploadArchives {
   repositories.mavenDeployer {
-    pom.artifactId = 'gradle'
+    pom.artifactId = 'gradle-android-test'
   }
 }

@@ -6,12 +6,12 @@ buildscript {
     }
 
     classpath 'com.android.tools.build:gradle:0.5.+'
-    classpath 'org.robolectric:gradle:1.0-SNAPSHOT'
+    classpath 'com.jakewharton:gradle-android-test:1.0-SNAPSHOT'
   }
 }
 
 apply plugin: 'android'
-apply plugin: 'robolectric'
+apply plugin: 'android-test'
 
 dependencies {
   repositories {
