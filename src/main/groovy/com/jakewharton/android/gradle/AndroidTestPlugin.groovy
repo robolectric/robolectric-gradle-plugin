@@ -115,6 +115,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
         testRunTask.description = "Run unit tests for Build '$variationName'."
         testRunTask.testReportDir = project.file("$project.buildDir/test-report/$variant.dirName")
+        testRunTask.systemProperties.put('android.manifest', processManifestTask.manifestOutputFile)
 
         testTask.reportOn testRunTask
       }
