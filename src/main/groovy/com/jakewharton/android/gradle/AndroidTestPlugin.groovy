@@ -12,6 +12,7 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
 
 class AndroidTestPlugin implements Plugin<Project> {
+  private static final String TEST_DIR = 'test'
   private static final String TEST_TASK_NAME = 'test'
   private static final String TEST_CLASSES_DIR = 'test-classes'
   private static final String TEST_REPORT_DIR = 'test-report'
@@ -19,6 +20,7 @@ class AndroidTestPlugin implements Plugin<Project> {
   void apply(Project project) {
     def hasAppPlugin = project.plugins.hasPlugin AppPlugin
     def hasLibraryPlugin = project.plugins.hasPlugin LibraryPlugin
+    def log = project.logger
 
     // Ensure the Android plugin has been added in app or library form, but not both.
     if (!hasAppPlugin && !hasLibraryPlugin) {
@@ -45,10 +47,8 @@ class AndroidTestPlugin implements Plugin<Project> {
     // Add our new task to Gradle's standard "check" task.
     project.tasks.check.dependsOn testTask
 
-    def log = project.logger
-    def android = project.android
-    def variants = hasAppPlugin ? android.applicationVariants : android.libraryVariants
-
+    def variants = hasAppPlugin ? project.android.applicationVariants :
+        project.android.libraryVariants
     variants.all { variant ->
       if (variant.buildType.name.equals(BuilderConstants.RELEASE)) {
         log.debug("Skipping release build type.")
@@ -57,8 +57,6 @@ class AndroidTestPlugin implements Plugin<Project> {
 
       // Get the build type name (e.g., "Debug", "Release").
       def buildTypeName = variant.buildType.name.capitalize()
-      def buildTypeTestDir = "test$buildTypeName"
-
       def projectFlavorNames = [""]
       if (hasAppPlugin) {
         // Flavors are only available for the app plugin (e.g., "Free", "Paid").
@@ -70,27 +68,25 @@ class AndroidTestPlugin implements Plugin<Project> {
       }
 
       projectFlavorNames.each { projectFlavorName ->
-        def flavorTestDir = "test$projectFlavorName"
-
         // The combination of flavor and type yield a unique "variation". This value is used for
         // looking up existing associated tasks as well as naming the task we are about to create.
         def variationName = "$projectFlavorName$buildTypeName"
 
         // Grab the task which outputs the merged manifest for this flavor.
-        def processManifestTask = variant.processManifest
+        def processedManifestPath = variant.processManifest.manifestOutputFile
         // Grab the java compilation task for classpath and task dependency.
         def javaCompileTask = variant.javaCompile
 
         SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
-        variationSources.java.srcDirs project.file('src/test/java'),
-            project.file("src/$buildTypeTestDir/java"),
-            project.file("src/$flavorTestDir/java")
+        variationSources.java.srcDirs project.file("src/$TEST_DIR/java"),
+            project.file("src/$TEST_DIR$buildTypeName/java"),
+            project.file("src/$TEST_DIR$projectFlavorName/java")
 
         log.debug("----------------------------------------")
         log.debug("build type name: $buildTypeName")
         log.debug("project flavor name: $projectFlavorName")
         log.debug("variation name: $variationName")
-        log.debug("manifest: $processManifestTask.manifestOutputFile")
+        log.debug("manifest: $processedManifestPath")
         log.debug("test sources: $variationSources.java.asPath")
         log.debug("----------------------------------------")
 
@@ -124,7 +120,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
 
         // Add the path to the correct manifest as a system property.
-        testRunTask.systemProperties.put('android.manifest', processManifestTask.manifestOutputFile)
+        testRunTask.systemProperties.put('android.manifest', processedManifestPath)
 
         testTask.reportOn testRunTask
       }
