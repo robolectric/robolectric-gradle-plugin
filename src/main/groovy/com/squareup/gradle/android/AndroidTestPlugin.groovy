@@ -1,4 +1,4 @@
-package com.jakewharton.android.gradle
+package com.squareup.gradle.android
 
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin

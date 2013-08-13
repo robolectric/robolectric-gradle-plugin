@@ -1,4 +1,4 @@
-package com.jakewharton.android.gradle
+package com.squareup.gradle.android
 
 import org.fest.assertions.api.Assertions
 import org.gradle.api.Project
