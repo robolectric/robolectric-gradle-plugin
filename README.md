@@ -9,7 +9,7 @@ Usage
 
 Add the plugin to your `buildscript`'s `dependencies` section:
 ```groovy
-classpath 'com.squareup:gradle-android-test:0.9.+'
+classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.+'
 ```
 
 Apply the `android-test` plugin:
