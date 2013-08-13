@@ -1,5 +1,4 @@
 package com.squareup.gradle.android
-
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import com.android.builder.BuilderConstants
@@ -72,9 +71,10 @@ class AndroidTestPlugin implements Plugin<Project> {
         // The combination of flavor and type yield a unique "variation". This value is used for
         // looking up existing associated tasks as well as naming the task we are about to create.
         def variationName = "$projectFlavorName$buildTypeName"
-        // Grab the task which outputs the merged manifest and resources for this flavor.
+        // Grab the task which outputs the merged manifest, resources, and assets for this flavor.
         def processedManifestPath = variant.processManifest.manifestOutputFile
-        def processedResPath = variant.mergeResources.outputDir
+        def processedResourcesPath = variant.mergeResources.outputDir
+        def processedAssetsPath = variant.mergeAssets.outputDir
 
         SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
         variationSources.java.srcDirs project.file("src/$TEST_DIR/java"),
@@ -86,7 +86,8 @@ class AndroidTestPlugin implements Plugin<Project> {
         log.debug("project flavor name: $projectFlavorName")
         log.debug("variation name: $variationName")
         log.debug("manifest: $processedManifestPath")
-        log.debug("manifest: $processedResPath")
+        log.debug("resources: $processedResourcesPath")
+        log.debug("assets: $processedAssetsPath")
         log.debug("test sources: $variationSources.java.asPath")
         log.debug("----------------------------------------")
 
@@ -142,9 +143,10 @@ class AndroidTestPlugin implements Plugin<Project> {
         testRunTask.scanForTestClasses = false
         testRunTask.include '**/*Test.class'
 
-        // Add the path to the correct manifest and resources as a system property.
+        // Add the path to the correct manifest, resources, assets as a system property.
         testRunTask.systemProperties.put('android.manifest', processedManifestPath)
-        testRunTask.systemProperties.put('android.res', processedResPath)
+        testRunTask.systemProperties.put('android.resources', processedResourcesPath)
+        testRunTask.systemProperties.put('android.assets', processedAssetsPath)
 
         testTask.reportOn testRunTask
       }

@@ -14,8 +14,10 @@ public class RobolectricGradleTestRunner extends RobolectricTestRunner {
   @Override protected AndroidManifest getAppManifest(Config config) {
     String manifestProperty = System.getProperty("android.manifest");
     if (config.manifest().equals(Config.DEFAULT) && manifestProperty != null) {
-      String resProperty = System.getProperty("android.res");
-      return new AndroidManifest(Fs.fileFromPath(manifestProperty), Fs.fileFromPath(resProperty));
+      String resProperty = System.getProperty("android.resources");
+      String assetsProperty = System.getProperty("android.assets");
+      return new AndroidManifest(Fs.fileFromPath(manifestProperty), Fs.fileFromPath(resProperty),
+          Fs.fileFromPath(assetsProperty));
     }
     return super.getAppManifest(config);
   }
