@@ -25,7 +25,7 @@ testCompile 'com.squareup:fest-android:1.0.+'
 ```
 
 Write your tests in `src/test/java/`! You can also add per-build type and per-flavor tests by using
-the same folder naming conventions (e.g., `src/testFree/java/`, `src/testDebug/java/`).
+the same folder naming conventions (e.g., `src/testPaid/java/`, `src/testDebug/java/`).
 
 
 Robolectric
