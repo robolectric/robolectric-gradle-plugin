@@ -35,28 +35,26 @@ The Android framework is not built with unit testing in mind. As such, the canon
 facilitate unit testing on the JVM is [Robolectric][robo]. Version 2.2 of Robolectric will support
 this plugin out of the box. Until then, you can use the following test runner:
 ```java
-import java.lang.reflect.Method;
 import org.junit.runners.model.InitializationError;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
+ import org.robolectric.AndroidManifest;
+ import org.robolectric.RobolectricTestRunner;
+ import org.robolectric.annotation.Config;
+ import org.robolectric.res.Fs;
 
-public class RobolectricGradleTestRunner extends RobolectricTestRunner {
-  private final Config overlay;
+ public class RobolectricGradleTestRunner extends RobolectricTestRunner {
+   public RobolectricGradleTestRunner(Class<?> testClass) throws InitializationError {
+     super(testClass);
+   }
 
-  public RobolectricGradleTestRunner(Class<?> testClass) throws InitializationError {
-    super(testClass);
-    String manifestFile = System.getProperty("android.manifest", Config.DEFAULT);
-    overlay = new Config.Implementation(-1, manifestFile, "", -1, new Class[0]);
-  }
-
-  @Override public Config getConfig(Method method) {
-    Config config = super.getConfig(method);
-    if (config.manifest().equals(Config.DEFAULT)) {
-      config = new Config.Implementation(config, overlay);
-    }
-    return config;
-  }
-}
+   @Override protected AndroidManifest getAppManifest(Config config) {
+     String manifestProperty = System.getProperty("android.manifest");
+     if (config.manifest().equals(Config.DEFAULT) && manifestProperty != null) {
+       String resProperty = System.getProperty("android.res");
+       return new AndroidManifest(Fs.fileFromPath(manifestProperty), Fs.fileFromPath(resProperty));
+     }
+     return super.getAppManifest(config);
+   }
+ }
 ```
 
 Just annotate your test classes with `@RunWith(RobolectricGradleTestRunner.class)` until version

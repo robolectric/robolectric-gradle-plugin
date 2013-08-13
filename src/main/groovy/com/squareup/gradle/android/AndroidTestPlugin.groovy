@@ -72,8 +72,9 @@ class AndroidTestPlugin implements Plugin<Project> {
         // The combination of flavor and type yield a unique "variation". This value is used for
         // looking up existing associated tasks as well as naming the task we are about to create.
         def variationName = "$projectFlavorName$buildTypeName"
-        // Grab the task which outputs the merged manifest for this flavor.
+        // Grab the task which outputs the merged manifest and resources for this flavor.
         def processedManifestPath = variant.processManifest.manifestOutputFile
+        def processedResPath = variant.mergeResources.outputDir
 
         SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
         variationSources.java.srcDirs project.file("src/$TEST_DIR/java"),
@@ -85,13 +86,15 @@ class AndroidTestPlugin implements Plugin<Project> {
         log.debug("project flavor name: $projectFlavorName")
         log.debug("variation name: $variationName")
         log.debug("manifest: $processedManifestPath")
+        log.debug("manifest: $processedResPath")
         log.debug("test sources: $variationSources.java.asPath")
         log.debug("----------------------------------------")
 
+        def javaCompile = variant.javaCompile;
+
         // Add the corresponding java compilation output to the 'testCompile' configuration to
         // create the classpath for the test file compilation.
-        def testCompileClasspath = testConfiguration.plus project.files(
-            variant.javaCompile.destinationDir)
+        def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir)
 
         def testDestinationDir = project.files(
             "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
@@ -99,12 +102,15 @@ class AndroidTestPlugin implements Plugin<Project> {
         // Create a task which compiles the test sources.
         def testCompileTask = project.tasks.getByName variationSources.compileJavaTaskName
         // Depend on the project compilation (which itself depends on the manifest processing task).
-        testCompileTask.dependsOn variant.javaCompile
+        testCompileTask.dependsOn javaCompile
         testCompileTask.group = null
         testCompileTask.description = null
         testCompileTask.classpath = testCompileClasspath
         testCompileTask.source = variationSources.java
         testCompileTask.destinationDir = testDestinationDir.getSingleFile()
+        testCompileTask.doFirst {
+          testCompileTask.options.bootClasspath = javaCompile.options.bootClasspath
+        }
 
         // Clear out the group/description of the classes plugin so it's not top-level.
         def testClassesTask = project.tasks.getByName variationSources.classesTaskName
@@ -126,9 +132,19 @@ class AndroidTestPlugin implements Plugin<Project> {
         // TODO Gradle 1.7: testRunTask.reports.html.destination =
         testRunTask.testReportDir =
             project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
+        testRunTask.doFirst {
+          // Prepend the Android runtime onto the classpath.
+          testRunTask.classpath =
+              project.files(javaCompile.options.bootClasspath).plus testRunClasspath
+        }
 
-        // Add the path to the correct manifest as a system property.
+        // Work around http://issues.gradle.org/browse/GRADLE-1682
+        testRunTask.scanForTestClasses = false
+        testRunTask.include '**/*Test.class'
+
+        // Add the path to the correct manifest and resources as a system property.
         testRunTask.systemProperties.put('android.manifest', processedManifestPath)
+        testRunTask.systemProperties.put('android.res', processedResPath)
 
         testTask.reportOn testRunTask
       }
