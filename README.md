@@ -28,6 +28,41 @@ Write your tests in `src/test/java/`! You can also add per-build type and per-fl
 the same folder naming conventions (e.g., `src/testFree/java/`, `src/testDebug/java/`).
 
 
+Robolectric
+-----------
+
+The Android framework is not built with unit testing in mind. As such, the canonical framework to
+facilitate unit testing on the JVM is [Robolectric][robo]. Version 2.2 of Robolectric will support
+this plugin out of the box. Until then, you can use the following test runner:
+```java
+import java.lang.reflect.Method;
+import org.junit.runners.model.InitializationError;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+
+public class RobolectricGradleTestRunner extends RobolectricTestRunner {
+  private final Config overlay;
+
+  public RobolectricGradleTestRunner(Class<?> testClass) throws InitializationError {
+    super(testClass);
+    String manifestFile = System.getProperty("android.manifest", Config.DEFAULT);
+    overlay = new Config.Implementation(-1, manifestFile, "", -1, new Class[0]);
+  }
+
+  @Override public Config getConfig(Method method) {
+    Config config = super.getConfig(method);
+    if (config.manifest().equals(Config.DEFAULT)) {
+      config = new Config.Implementation(config, overlay);
+    }
+    return config;
+  }
+}
+```
+
+Just annotate your test classes with `@RunWith(RobolectricGradleTestRunner.class)` until version
+2.2 is released.
+
+
 Plugin Development
 ------------------
 
@@ -55,3 +90,7 @@ License
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+
+
+ [robo]: http://robolectric.org
