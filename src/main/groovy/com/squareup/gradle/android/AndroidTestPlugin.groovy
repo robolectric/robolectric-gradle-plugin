@@ -88,6 +88,11 @@ class AndroidTestPlugin implements Plugin<Project> {
         log.debug("test sources: $variationSources.java.asPath")
         log.debug("----------------------------------------")
 
+        // Add the corresponding java compilation output to the 'testCompile' configuration to
+        // create the classpath for the test file compilation.
+        def testCompileClasspath = testConfiguration.plus project.files(
+            variant.javaCompile.destinationDir)
+
         def testDestinationDir = project.files(
             "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
 
@@ -97,7 +102,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         testCompileTask.dependsOn variant.javaCompile
         testCompileTask.group = null
         testCompileTask.description = null
-        testCompileTask.classpath = testConfiguration
+        testCompileTask.classpath = testCompileClasspath
         testCompileTask.source = variationSources.java
         testCompileTask.destinationDir = testDestinationDir.getSingleFile()
 
@@ -106,11 +111,15 @@ class AndroidTestPlugin implements Plugin<Project> {
         testClassesTask.group = null
         testClassesTask.description = null
 
+        // Add the output of the test file compilation to the existing test classpath to create
+        // the runtime classpath for test execution.
+        def testRunClasspath = testCompileClasspath.plus testDestinationDir
+
         // Create a task which runs the compiled test classes.
         def taskRunName = "$TEST_TASK_NAME$variationName"
         def testRunTask = project.tasks.create(taskRunName, Test)
         testRunTask.dependsOn testClassesTask
-        testRunTask.classpath = testConfiguration.plus testDestinationDir
+        testRunTask.classpath = testRunClasspath
         testRunTask.testClassesDir = testCompileTask.destinationDir
         testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
         testRunTask.description = "Run unit tests for Build '$variationName'."
