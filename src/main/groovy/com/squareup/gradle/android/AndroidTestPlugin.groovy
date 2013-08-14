@@ -1,5 +1,6 @@
 package com.squareup.gradle.android
 import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.BasePlugin
 import com.android.build.gradle.LibraryPlugin
 import com.android.builder.BuilderConstants
 import org.gradle.api.Plugin
@@ -45,6 +46,8 @@ class AndroidTestPlugin implements Plugin<Project> {
     testTask.group = JavaBasePlugin.VERIFICATION_GROUP
     // Add our new task to Gradle's standard "check" task.
     project.tasks.check.dependsOn testTask
+
+    BasePlugin plugin = project.plugins.getPlugin(hasAppPlugin ? AppPlugin : LibraryPlugin);
 
     def variants = hasAppPlugin ? project.android.applicationVariants :
         project.android.libraryVariants
@@ -110,7 +113,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         testCompileTask.source = variationSources.java
         testCompileTask.destinationDir = testDestinationDir.getSingleFile()
         testCompileTask.doFirst {
-          testCompileTask.options.bootClasspath = javaCompile.options.bootClasspath
+          testCompileTask.options.bootClasspath = plugin.getRuntimeJarList().join(File.separator)
         }
 
         // Clear out the group/description of the classes plugin so it's not top-level.
@@ -135,8 +138,8 @@ class AndroidTestPlugin implements Plugin<Project> {
             project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
         testRunTask.doFirst {
           // Prepend the Android runtime onto the classpath.
-          testRunTask.classpath =
-              project.files(javaCompile.options.bootClasspath).plus testRunClasspath
+          def androidRuntime = project.files(plugin.getRuntimeJarList().join(File.separator))
+          testRunTask.classpath = project.files(androidRuntime).plus testRunClasspath
         }
 
         // Work around http://issues.gradle.org/browse/GRADLE-1682
