@@ -59,8 +59,8 @@ public class RobolectricGradleTestRunner extends RobolectricTestRunner {
 }
 ```
 
-Just annotate your test classes with `@RunWith(RobolectricGradleTestRunner.class)` until version
-2.2 is released.
+Just annotate your test classes with `@RunWith(RobolectricGradleTestRunner.class)` or subclass this
+test runner if you have other customizations.
 
 
 Plugin Development
