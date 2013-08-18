@@ -20,7 +20,7 @@ apply plugin: 'android-test'
 Add test-only dependencies using the `testCompile` configuration:
 ```groovy
 testCompile 'junit:junit:4.10'
-testCompile 'org.roboelctric:robolectric:2.1.+'
+testCompile 'org.robolectric:robolectric:2.1.+'
 testCompile 'com.squareup:fest-android:1.0.+'
 ```
 
