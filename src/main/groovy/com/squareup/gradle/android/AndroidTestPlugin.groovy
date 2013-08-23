@@ -113,7 +113,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         testCompileTask.source = variationSources.java
         testCompileTask.destinationDir = testDestinationDir.getSingleFile()
         testCompileTask.doFirst {
-          testCompileTask.options.bootClasspath = plugin.getRuntimeJarList().join(File.separator)
+          testCompileTask.options.bootClasspath = plugin.getRuntimeJarList().join(File.pathSeparator)
         }
 
         // Clear out the group/description of the classes plugin so it's not top-level.
@@ -138,7 +138,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
         testRunTask.doFirst {
           // Prepend the Android runtime onto the classpath.
-          def androidRuntime = project.files(plugin.getRuntimeJarList().join(File.separator))
+          def androidRuntime = project.files(plugin.getRuntimeJarList().join(File.pathSeparator))
           testRunTask.classpath = project.files(androidRuntime).plus testRunClasspath
         }
 
