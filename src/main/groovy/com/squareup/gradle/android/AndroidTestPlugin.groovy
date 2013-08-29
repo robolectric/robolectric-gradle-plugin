@@ -80,6 +80,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         def processedAssetsPath = variant.mergeAssets.outputDir
 
         SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
+        variationSources.resources.srcDirs project.file("src/$TEST_DIR/resources")
         variationSources.java.srcDirs project.file("src/$TEST_DIR/java"),
             project.file("src/$TEST_DIR$buildTypeName/java"),
             project.file("src/$TEST_DIR$projectFlavorName/java")
@@ -92,6 +93,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         log.debug("resources: $processedResourcesPath")
         log.debug("assets: $processedAssetsPath")
         log.debug("test sources: $variationSources.java.asPath")
+        log.debug("test resources: $variationSources.resources.asPath")
         log.debug("----------------------------------------")
 
         def javaCompile = variant.javaCompile;
@@ -124,6 +126,8 @@ class AndroidTestPlugin implements Plugin<Project> {
         // Add the output of the test file compilation to the existing test classpath to create
         // the runtime classpath for test execution.
         def testRunClasspath = testCompileClasspath.plus testDestinationDir
+        testRunClasspath = testRunClasspath.plus
+            project.files("$project.buildDir/resources/test$variationName")
 
         // Create a task which runs the compiled test classes.
         def taskRunName = "$TEST_TASK_NAME$variationName"
