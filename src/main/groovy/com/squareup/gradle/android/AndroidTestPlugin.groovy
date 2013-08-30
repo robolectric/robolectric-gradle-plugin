@@ -126,8 +126,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         // Add the output of the test file compilation to the existing test classpath to create
         // the runtime classpath for test execution.
         def testRunClasspath = testCompileClasspath.plus testDestinationDir
-        testRunClasspath = testRunClasspath.plus
-            project.files("$project.buildDir/resources/test$variationName")
+        testRunClasspath = testRunClasspath.plus project.files("$project.buildDir/resources/test$variationName")
 
         // Create a task which runs the compiled test classes.
         def taskRunName = "$TEST_TASK_NAME$variationName"
