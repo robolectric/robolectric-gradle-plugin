@@ -69,93 +69,98 @@ class AndroidTestPlugin implements Plugin<Project> {
           projectFlavorNames = [""]
         }
       }
+      def projectFlavorName = projectFlavorNames.join()
 
-      projectFlavorNames.each { projectFlavorName ->
-        // The combination of flavor and type yield a unique "variation". This value is used for
-        // looking up existing associated tasks as well as naming the task we are about to create.
-        def variationName = "$projectFlavorName$buildTypeName"
-        // Grab the task which outputs the merged manifest, resources, and assets for this flavor.
-        def processedManifestPath = variant.processManifest.manifestOutputFile
-        def processedResourcesPath = variant.mergeResources.outputDir
-        def processedAssetsPath = variant.mergeAssets.outputDir
+      // The combination of flavor and type yield a unique "variation". This value is used for
+      // looking up existing associated tasks as well as naming the task we are about to create.
+      def variationName = "$projectFlavorName$buildTypeName"
+      // Grab the task which outputs the merged manifest, resources, and assets for this flavor.
+      def processedManifestPath = variant.processManifest.manifestOutputFile
+      def processedResourcesPath = variant.mergeResources.outputDir
+      def processedAssetsPath = variant.mergeAssets.outputDir
 
-        SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
-        variationSources.resources.srcDirs project.file("src/$TEST_DIR/resources")
-        variationSources.java.srcDirs project.file("src/$TEST_DIR/java"),
-            project.file("src/$TEST_DIR$buildTypeName/java"),
-            project.file("src/$TEST_DIR$projectFlavorName/java")
+      def testSrcDirs = []
+      testSrcDirs.add(project.file("src/$TEST_DIR/java"))
+      testSrcDirs.add(project.file("src/$TEST_DIR$buildTypeName/java"))
+      testSrcDirs.add(project.file("src/$TEST_DIR$projectFlavorName/java"))
+      projectFlavorNames.each { flavor ->
+        testSrcDirs.add project.file("src/$TEST_DIR$flavor/java")
+      }
 
-        log.debug("----------------------------------------")
-        log.debug("build type name: $buildTypeName")
-        log.debug("project flavor name: $projectFlavorName")
-        log.debug("variation name: $variationName")
-        log.debug("manifest: $processedManifestPath")
-        log.debug("resources: $processedResourcesPath")
-        log.debug("assets: $processedAssetsPath")
-        log.debug("test sources: $variationSources.java.asPath")
-        log.debug("test resources: $variationSources.resources.asPath")
-        log.debug("----------------------------------------")
+      SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
+      variationSources.resources.srcDirs project.file("src/$TEST_DIR/resources")
+      variationSources.java.setSrcDirs testSrcDirs
 
-        def javaCompile = variant.javaCompile;
+      log.debug("----------------------------------------")
+      log.debug("build type name: $buildTypeName")
+      log.debug("project flavor name: $projectFlavorName")
+      log.debug("variation name: $variationName")
+      log.debug("manifest: $processedManifestPath")
+      log.debug("resources: $processedResourcesPath")
+      log.debug("assets: $processedAssetsPath")
+      log.debug("test sources: $variationSources.java.asPath")
+      log.debug("test resources: $variationSources.resources.asPath")
+      log.debug("----------------------------------------")
 
-        // Add the corresponding java compilation output to the 'testCompile' configuration to
-        // create the classpath for the test file compilation.
-        def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir, javaCompile.classpath)
+      def javaCompile = variant.javaCompile;
 
-        def testDestinationDir = project.files(
-            "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
+      // Add the corresponding java compilation output to the 'testCompile' configuration to
+      // create the classpath for the test file compilation.
+      def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir, javaCompile.classpath)
 
-        // Create a task which compiles the test sources.
-        def testCompileTask = project.tasks.getByName variationSources.compileJavaTaskName
-        // Depend on the project compilation (which itself depends on the manifest processing task).
-        testCompileTask.dependsOn javaCompile
-        testCompileTask.group = null
-        testCompileTask.description = null
-        testCompileTask.classpath = testCompileClasspath
-        testCompileTask.source = variationSources.java
-        testCompileTask.destinationDir = testDestinationDir.getSingleFile()
-        testCompileTask.doFirst {
-          testCompileTask.options.bootClasspath = plugin.getRuntimeJarList().join(File.pathSeparator)
-        }
+      def testDestinationDir = project.files(
+          "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
 
-        // Clear out the group/description of the classes plugin so it's not top-level.
-        def testClassesTask = project.tasks.getByName variationSources.classesTaskName
-        testClassesTask.group = null
-        testClassesTask.description = null
+      // Create a task which compiles the test sources.
+      def testCompileTask = project.tasks.getByName variationSources.compileJavaTaskName
+      // Depend on the project compilation (which itself depends on the manifest processing task).
+      testCompileTask.dependsOn javaCompile
+      testCompileTask.group = null
+      testCompileTask.description = null
+      testCompileTask.classpath = testCompileClasspath
+      testCompileTask.source = variationSources.java
+      testCompileTask.destinationDir = testDestinationDir.getSingleFile()
+      testCompileTask.doFirst {
+        testCompileTask.options.bootClasspath = plugin.getRuntimeJarList().join(File.pathSeparator)
+      }
 
-        // Add the output of the test file compilation to the existing test classpath to create
-        // the runtime classpath for test execution.
-        def testRunClasspath = testCompileClasspath.plus testDestinationDir
-        testRunClasspath = testRunClasspath.plus project.files("$project.buildDir/resources/test$variationName")
+      // Clear out the group/description of the classes plugin so it's not top-level.
+      def testClassesTask = project.tasks.getByName variationSources.classesTaskName
+      testClassesTask.group = null
+      testClassesTask.description = null
 
-        // Create a task which runs the compiled test classes.
-        def taskRunName = "$TEST_TASK_NAME$variationName"
-        def testRunTask = project.tasks.create(taskRunName, Test)
-        testRunTask.dependsOn testClassesTask
-        testRunTask.classpath = testRunClasspath
-        testRunTask.testClassesDir = testCompileTask.destinationDir
-        testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
-        testRunTask.description = "Run unit tests for Build '$variationName'."
-        // TODO Gradle 1.7: testRunTask.reports.html.destination =
-        testRunTask.testReportDir =
-            project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
-        testRunTask.doFirst {
-          // Prepend the Android runtime onto the classpath.
-          def androidRuntime = project.files(plugin.getRuntimeJarList().join(File.pathSeparator))
-          testRunTask.classpath = project.files(androidRuntime).plus testRunClasspath
-        }
+      // Add the output of the test file compilation to the existing test classpath to create
+      // the runtime classpath for test execution.
+      def testRunClasspath = testCompileClasspath.plus testDestinationDir
+      testRunClasspath.add project.files("$project.buildDir/resources/test$variationName")
 
-        // Work around http://issues.gradle.org/browse/GRADLE-1682
-        testRunTask.scanForTestClasses = false
-        testRunTask.include '**/*Test.class'
+      // Create a task which runs the compiled test classes.
+      def taskRunName = "$TEST_TASK_NAME$variationName"
+      def testRunTask = project.tasks.create(taskRunName, Test)
+      testRunTask.dependsOn testClassesTask
+      testRunTask.classpath = testRunClasspath
+      testRunTask.testClassesDir = testCompileTask.destinationDir
+      testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
+      testRunTask.description = "Run unit tests for Build '$variationName'."
+      // TODO Gradle 1.7: testRunTask.reports.html.destination =
+      testRunTask.testReportDir =
+          project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
+      testRunTask.doFirst {
+        // Prepend the Android runtime onto the classpath.
+        def androidRuntime = project.files(plugin.getRuntimeJarList().join(File.pathSeparator))
+        testRunTask.classpath = project.files(androidRuntime).plus testRunClasspath
+      }
 
-        // Add the path to the correct manifest, resources, assets as a system property.
-        testRunTask.systemProperties.put('android.manifest', processedManifestPath)
-        testRunTask.systemProperties.put('android.resources', processedResourcesPath)
-        testRunTask.systemProperties.put('android.assets', processedAssetsPath)
+      // Work around http://issues.gradle.org/browse/GRADLE-1682
+      testRunTask.scanForTestClasses = false
+      testRunTask.include '**/*Test.class'
 
-        testTask.reportOn testRunTask
+      // Add the path to the correct manifest, resources, assets as a system property.
+      testRunTask.systemProperties.put('android.manifest', processedManifestPath)
+      testRunTask.systemProperties.put('android.resources', processedResourcesPath)
+      testRunTask.systemProperties.put('android.assets', processedAssetsPath)
+
+      testTask.reportOn testRunTask
       }
     }
-  }
 }

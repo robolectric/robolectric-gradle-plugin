@@ -30,7 +30,23 @@ android {
   buildToolsVersion '18.0.1'
 
   productFlavors {
-    free
-    paid
+
+    flavorGroups  "pricing", "releaseType"
+
+    beta {
+      flavorGroup "releaseType"
+    }
+
+    normal {
+      flavorGroup "releaseType"
+    }
+
+    free {
+      flavorGroup "pricing"
+    }
+
+    paid {
+      flavorGroup "pricing"
+    }
   }
 }
