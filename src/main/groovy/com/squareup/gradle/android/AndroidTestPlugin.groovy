@@ -100,7 +100,7 @@ class AndroidTestPlugin implements Plugin<Project> {
 
         // Add the corresponding java compilation output to the 'testCompile' configuration to
         // create the classpath for the test file compilation.
-        def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir)
+        def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir, javaCompile.classpath)
 
         def testDestinationDir = project.files(
             "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
