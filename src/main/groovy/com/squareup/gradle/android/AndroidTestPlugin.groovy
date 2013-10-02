@@ -139,7 +139,6 @@ class AndroidTestPlugin implements Plugin<Project> {
       def testRunTask = project.tasks.create(taskRunName, Test)
       testRunTask.dependsOn testClassesTask
       testRunTask.inputs.sourceFiles.from.clear()
-      testRunTask.inputs.source(testCompileTask.source)
       testRunTask.classpath = testRunClasspath
       testRunTask.testClassesDir = testCompileTask.destinationDir
       testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
