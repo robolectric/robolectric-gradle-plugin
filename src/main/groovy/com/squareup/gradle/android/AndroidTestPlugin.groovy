@@ -107,7 +107,7 @@ class AndroidTestPlugin implements Plugin<Project> {
       // Add the corresponding java compilation output to the 'testCompile' configuration to
       // create the classpath for the test file compilation.
       def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir, javaCompile.classpath)
-
+  
       def testDestinationDir = project.files(
           "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
 
@@ -149,7 +149,7 @@ class AndroidTestPlugin implements Plugin<Project> {
       testRunTask.doFirst {
         // Prepend the Android runtime onto the classpath.
         def androidRuntime = project.files(plugin.getRuntimeJarList().join(File.pathSeparator))
-        testRunTask.classpath = project.files(androidRuntime).plus testRunClasspath
+        testRunTask.classpath = testRunClasspath.plus project.files(androidRuntime)
       }
 
       // Work around http://issues.gradle.org/browse/GRADLE-1682
