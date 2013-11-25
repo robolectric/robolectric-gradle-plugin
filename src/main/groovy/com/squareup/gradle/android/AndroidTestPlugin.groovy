@@ -14,8 +14,8 @@ import org.gradle.api.tasks.testing.TestReport
 class AndroidTestPlugin implements Plugin<Project> {
   private static final String TEST_DIR = 'test'
   private static final String TEST_TASK_NAME = 'test'
-  private static final String TEST_CLASSES_DIR = 'test-classes'
-  private static final String TEST_REPORT_DIR = 'test-report'
+  private static final String TEST_CLASSES_DIR = "$TEST_DIR-classes"
+  private static final String TEST_REPORT_DIR = "$TEST_DIR-report"
 
   void apply(Project project) {
     def hasAppPlugin = project.plugins.hasPlugin AppPlugin
@@ -30,8 +30,8 @@ class AndroidTestPlugin implements Plugin<Project> {
           "Having both 'android' and 'android-library' plugin is not supported.")
     }
 
-    // Create the 'test' configuration for test-only dependencies.
-    def testConfiguration = project.configurations.create('testCompile')
+    // Create the configuration for test-only dependencies.
+    def testConfiguration = project.configurations.create(TEST_TASK_NAME + 'Compile')
     // Make the 'test' configuration extend from the normal 'compile' configuration.
     testConfiguration.extendsFrom project.configurations.getByName('compile')
 
@@ -87,7 +87,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         testSrcDirs.add project.file("src/$TEST_DIR$flavor/java")
       }
 
-      SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
+      SourceSet variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
       variationSources.resources.srcDirs project.file("src/$TEST_DIR/resources")
       variationSources.java.setSrcDirs testSrcDirs
 
@@ -132,7 +132,7 @@ class AndroidTestPlugin implements Plugin<Project> {
       // Add the output of the test file compilation to the existing test classpath to create
       // the runtime classpath for test execution.
       def testRunClasspath = testCompileClasspath.plus testDestinationDir
-      testRunClasspath.add project.files("$project.buildDir/resources/test$variationName")
+      testRunClasspath.add project.files("$project.buildDir/resources/$TEST_DIR$variationName")
 
       // Create a task which runs the compiled test classes.
       def taskRunName = "$TEST_TASK_NAME$variationName"
