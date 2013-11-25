@@ -32,8 +32,9 @@ Robolectric
 -----------
 
 The Android framework is not built with unit testing in mind. As such, the canonical framework to
-facilitate unit testing on the JVM is [Robolectric][robo]. Version 2.2 of Robolectric will support
-this plugin out of the box. Until then, you can use the following test runner:
+facilitate unit testing on the JVM is [Robolectric][robo]. Version 2.3 of Robolectric will support
+this plugin out of the box ([see here](https://github.com/robolectric/robolectric/pull/744)).
+Until then, you can use the following test runner:
 ```java
 import org.junit.runners.model.InitializationError;
 import org.robolectric.AndroidManifest;
