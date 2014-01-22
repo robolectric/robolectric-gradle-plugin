@@ -1,3 +1,11 @@
+# DEPRECATED
+
+Don't use this. I have neither the time nor energy nor desire to maintain.
+
+Bug the tools team for proper unit test support.
+
+
+
 Gradle Android Unit Testing Plugin
 ==================================
 
