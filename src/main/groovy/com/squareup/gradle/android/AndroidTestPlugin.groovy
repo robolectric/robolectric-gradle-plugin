@@ -139,6 +139,9 @@ class AndroidTestPlugin implements Plugin<Project> {
             testClassesTask.group = null
             testClassesTask.description = null
 
+            def testClasses = project.tasks.create('testClasses')
+            testClasses.dependsOn testClassesTask
+
             // Create a task which runs the compiled test classes.
             def taskRunName = "$TEST_TASK_NAME$variationName"
             def testRunTask = project.tasks.create(taskRunName, Test)
