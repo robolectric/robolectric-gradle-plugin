@@ -1,10 +1,4 @@
-# DEPRECATED
-
-Don't use this. I have neither the time nor energy nor desire to maintain.
-
-[Bug the tools team](http://tools.android.com/feedback) for proper unit test support.
-
-
+This is a fork of @JakeWharton's plugin. Updates gradle versions and allows for running junit tests in IDEA.
 
 Gradle Android Unit Testing Plugin
 ==================================
