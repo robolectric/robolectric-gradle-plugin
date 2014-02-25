@@ -138,9 +138,14 @@ class AndroidTestPlugin implements Plugin<Project> {
             def testClassesTask = project.tasks.getByName variationSources.classesTaskName
             testClassesTask.group = null
             testClassesTask.description = null
+            testClassesTask.destinationDir = testDestinationDir
 
             def testClasses = project.tasks.create('testClasses')
             testClasses.dependsOn testClassesTask
+
+            // don't leave test resources behind
+            def processResourcesTask = project.tasks.getByName variationSources.processResourcesTaskName
+            processResourcesTask.destinationDir = testDestinationDir.getSingleFile()
 
             // Create a task which runs the compiled test classes.
             def taskRunName = "$TEST_TASK_NAME$variationName"
