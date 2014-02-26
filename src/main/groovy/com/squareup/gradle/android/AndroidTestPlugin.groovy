@@ -19,6 +19,8 @@ class AndroidTestPlugin implements Plugin<Project> {
     private static final String TEST_REPORT_DIR = "test-report"
 
     void apply(Project project) {
+        def extension = project.extensions.create('androidTest', AndroidTestExtension)
+
         def hasAppPlugin = project.plugins.hasPlugin AppPlugin
         def hasLibraryPlugin = project.plugins.hasPlugin LibraryPlugin
         def log = project.logger
@@ -173,6 +175,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             testRunTask.systemProperties.put('android.manifest', processedManifestPath)
             testRunTask.systemProperties.put('android.resources', processedResourcesPath)
             testRunTask.systemProperties.put('android.assets', processedAssetsPath)
+            testRunTask.setMaxHeapSize(extension.maxHeapSize)
 
             testTask.reportOn testRunTask
         }
