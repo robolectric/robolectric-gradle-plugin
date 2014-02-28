@@ -36,14 +36,14 @@ class AndroidTestPluginTest {
   }
 
   @Test public void createsATestTaskForTheDebugVariant() {
-    project = evaluatableProject()
+    Project project = evaluatableProject()
     project.evaluate()
     def testDebugTask = project.tasks.testDebug
     assertTrue(testDebugTask instanceof org.gradle.api.tasks.testing.Test)
   }
 
   @Test public void supportsSettingAnExcludePattern_viaTheAndroidTestExtension() {
-    project = evaluatableProject()
+    Project project = evaluatableProject()
 
     project.androidTest {
       exclude "**/lame_tests/**"
