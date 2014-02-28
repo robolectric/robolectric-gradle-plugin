@@ -8,12 +8,6 @@ import org.junit.Test
 
 class AndroidTestPluginTest {
 
-  @Test public void pluginDetectsAppPlugin() {
-    Project project = ProjectBuilder.builder().build()
-    project.apply plugin: 'android'
-    project.apply plugin: 'android-test'
-  }
-
   @Test public void pluginDetectsLibraryPlugin() {
     Project project = ProjectBuilder.builder().build()
     project.apply plugin: 'android-library'
