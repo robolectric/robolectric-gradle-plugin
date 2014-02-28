@@ -169,13 +169,18 @@ class AndroidTestPlugin implements Plugin<Project> {
 
             // Work around http://issues.gradle.org/browse/GRADLE-1682
             testRunTask.scanForTestClasses = false
-            testRunTask.include '**/*Test.class'
 
             // Add the path to the correct manifest, resources, assets as a system property.
             testRunTask.systemProperties.put('android.manifest', processedManifestPath)
             testRunTask.systemProperties.put('android.resources', processedResourcesPath)
             testRunTask.systemProperties.put('android.assets', processedAssetsPath)
             testRunTask.setMaxHeapSize(extension.maxHeapSize)
+
+            String includePattern = extension.includePattern ? extension.includePattern : '**/*Test.class'
+            testRunTask.include(includePattern)
+            if (extension.excludePattern) {
+                testRunTask.exclude(extension.excludePattern)
+            }
 
             testTask.reportOn testRunTask
         }
