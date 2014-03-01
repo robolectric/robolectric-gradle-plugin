@@ -76,6 +76,15 @@ The `example/` dir contains a project which covers a few configurations for the 
  2. In the `example/` folder, run `../gradlew clean check` to build and run the unit tests.
  3. Open `example/build/test-report/index.html` in the browser.
 
+Debugging
+---------
+1. Execute this at the root of your project:
+```bash
+GRADLE_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006" ./gradlew test --no-daemon -Dorg.gradle.debug=true
+```
+2. Point a remote debugger to port 5006. In Intellij set up 'Remote' Debug configuration and set the port (actual port can be changed)
+3. To see breakpoints in the plugin, or the android plugin, or gradle proper you will need to put those JARs on your classpath and attach the source as well. This is possible in IntelliJ, anyway :).
+
 
 License
 -------
