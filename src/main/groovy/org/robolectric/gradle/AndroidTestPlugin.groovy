@@ -1,4 +1,4 @@
-package com.squareup.gradle.android
+package org.robolectric.gradle
 
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BasePlugin

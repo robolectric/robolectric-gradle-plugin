@@ -12,7 +12,7 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'nexus'
 
-group = 'com.squareup.gradle'
+group = 'org.robolectric.gradle'
 version = '0.9.2-SNAPSHOT'
 
 dependencies {
@@ -43,13 +43,13 @@ modifyPom {
   project {
     name 'Gradle Android Test Plugin'
     description "A Gradle plugin which enables good 'ol fashioned unit tests for Android builds."
-    url 'https://github.com/square/gradle-android-test-plugin'
+    url 'https://github.com/robolectric/gradle-android-test-plugin'
     inceptionYear '2013'
 
     scm {
-      url 'https://github.com/square/gradle-android-test-plugin'
-      connection 'scm:git:git://github.com/square/gradle-android-test-plugin.git'
-      developerConnection 'scm:git:ssh://git@github.com/square/gradle-android-test-plugin.git'
+      url 'https://github.com/robolectric/gradle-android-test-plugin'
+      connection 'scm:git:git://github.com/robolectric/gradle-android-test-plugin.git'
+      developerConnection 'scm:git:ssh://git@github.com/robolectric/gradle-android-test-plugin.git'
     }
 
     licenses {
@@ -65,6 +65,18 @@ modifyPom {
         id 'squaregithub'
         name 'Square Open Source Development'
         email 'jobs@squareup.com'
+      }
+
+      developer {
+        id 'mike'
+        name 'Mike Grafton'
+        email 'mike@pivotallabs.com'
+      }
+
+      developer {
+        id 'terry'
+        name 'Terry Chen'
+        email 'terry@pivotallabs.com'
       }
     }
 

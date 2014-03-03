@@ -1,4 +1,4 @@
-package com.squareup.gradle.android
+package org.robolectric.gradle
 
 class AndroidTestExtension {
     private String maxHeapSize

@@ -1,4 +1,4 @@
-package com.squareup.gradle.android
+package org.robolectric.gradle
 
 import org.fest.assertions.api.Assertions
 import org.gradle.api.Project
