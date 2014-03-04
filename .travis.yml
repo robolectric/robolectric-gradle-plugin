@@ -1,1 +1,3 @@
-## use default Travis settings first
+language: groovy
+jdk:
+  - oraclejdk7
