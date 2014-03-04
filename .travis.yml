@@ -1,6 +1,6 @@
 language: groovy
 jdk:
-  - oraclejdk6
+  - openjdk6
 
 script:
   - ./gradlew check
