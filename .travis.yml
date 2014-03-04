@@ -3,4 +3,4 @@ jdk:
   - openjdk6
 
 script:
-  - ./gradlew check
+  - ./gradlew check --info
