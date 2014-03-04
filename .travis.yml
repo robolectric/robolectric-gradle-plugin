@@ -3,4 +3,6 @@ jdk:
   - oraclejdk7
 
 script:
-  - ./gradlew check --stacktrace
+  - ./gradlew check --info
+
+after
