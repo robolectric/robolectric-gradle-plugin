@@ -2,6 +2,7 @@ This is a fork of @JakeWharton's plugin. Updates gradle versions and allows for 
 
 Gradle Android Unit Testing Plugin
 ==================================
+[![Build Status](https://secure.travis-ci.org/robolectric/gradle-android-test-plugin.png?branch=master)](http://travis-ci.org/robolectric/gradle-android-test-plugin)
 
 A Gradle plugin which enables good 'ol fashioned unit tests for Android builds.
 
