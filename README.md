@@ -5,11 +5,16 @@ Gradle Android Unit Testing Plugin
 
 A Gradle plugin which enables good 'ol fashioned unit tests for Android builds.
 
+This plugin is primarily focused on enabling Robolectric tests using gradle. The Android framework is not built with
+unit testing in mind. As such, the canonical framework to facilitate unit testing on the JVM is [Robolectric][robo].
+
 Getting Started
 -----
 If you are starting a new app, or want to try this plugin in the simplest possible environment, the easisest way to start is to use [deckard-gradle](https://github.com/robolectric/deckard-gradle).
 
-Usage
+deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.google.com/p/android-test-kit/wiki/Espresso) tests in Intellij, Android Studio or the command-line.
+
+Basic Usage for JUnit / Robolectric
 -----
 
 Add the plugin to your `buildscript`'s `dependencies` section:
@@ -24,21 +29,35 @@ apply plugin: 'android-test'
 
 Add test-only dependencies using the `testCompile` configuration:
 ```groovy
-testCompile 'junit:junit:4.10'
-testCompile 'org.robolectric:robolectric:2.1.+'
-testCompile 'com.squareup:fest-android:1.0.+'
+instrumentTestCompile 'junit:junit:4.10'
+instrumentTestCompile 'org.robolectric:robolectric:2.1.+'
+instrumentTestCompile 'com.squareup:fest-android:1.0.+'
 ```
 
 Write your tests in `src/test/java/`! You can also add per-build type and per-flavor tests by using
 the same folder naming conventions (e.g., `src/testPaid/java/`, `src/testDebug/java/`).
 
+Run your tests by calling `gradle clean test`.
 
-Robolectric
+Configuration using DSL
+-----
+
+```groovy
+androidTest {
+    // configure the set of classes for JUnit tests
+    include '**/*Test.class'
+    exclude '**/espresso/**/*.class'
+
+    // configure max heap size of the test JVM
+    maxHeapSize = "2048m"
+}
+```
+
+
+Robolectric 2.2 or earlier
 -----------
 
-The Android framework is not built with unit testing in mind. As such, the canonical framework to
-facilitate unit testing on the JVM is [Robolectric][robo]. Version 2.3 of Robolectric will support
-this plugin out of the box ([see here](https://github.com/robolectric/robolectric/pull/744)).
+Version 2.3 of Robolectric will support this plugin out of the box ([see here](https://github.com/robolectric/robolectric/pull/744)).
 Until then, you can use the following test runner:
 ```java
 import org.junit.runners.model.InitializationError;
