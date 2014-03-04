@@ -4,5 +4,3 @@ jdk:
 
 script:
   - ./gradlew check --info
-
-after
