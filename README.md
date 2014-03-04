@@ -5,6 +5,9 @@ Gradle Android Unit Testing Plugin
 
 A Gradle plugin which enables good 'ol fashioned unit tests for Android builds.
 
+Getting Started
+-----
+If you are starting a new app, or want to try this plugin in the simplest possible environment, the easisest way to start is to use [deckard-gradle](https://github.com/robolectric/deckard-gradle).
 
 Usage
 -----
