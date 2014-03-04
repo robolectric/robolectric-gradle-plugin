@@ -111,6 +111,13 @@ You can run the plugin in the debugger, but it takes some setup.
 3. In IntelliJ, to break at breakpoints inside of our plugin or other gradle code you will need to put the appropriate JARs on your classpath, and then attach the source. It's a bit of a hack but it is possible in IntelliJ, anyway :).
 
 
+Future Directions
+------------------
+- Change use of 'instrumentTestCompile' to 'testCompile' - more like standard Java plugin
+- Pull in bits of [SuperJugy's plugin](https://github.com/SuperJugy/android-unit-test), especially the single-test command-line support && better code structure
+- Maybe disappear if we can get the Android Tools team to support JUnit out of the box
+
+
 License
 -------
 
