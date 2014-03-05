@@ -28,7 +28,7 @@ Apply the `android-test` plugin:
 apply plugin: 'android-test'
 ```
 
-Add test-only dependencies using the `testCompile` configuration:
+Add test-only dependencies using the `instrumentTestCompile` configuration:
 ```groovy
 instrumentTestCompile 'junit:junit:4.10'
 instrumentTestCompile 'org.robolectric:robolectric:2.1.+'
