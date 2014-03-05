@@ -54,6 +54,21 @@ androidTest {
 }
 ```
 
+Importing into your IDE (IntelliJ or Android Studio)
+---------
+In a nutshell, you should be able to import into these IDEs (and continuously sync when you change your build.gradle). 
+
+It bears repeating, though: if you see the dreaded `Stub!` exception:
+
+    !!! JUnit version 3.8 or later expected:
+
+	java.lang.RuntimeException: Stub!
+	at junit.runner.BaseTestRunner.<init>(BaseTestRunner.java:5)
+	at junit.textui.TestRunner.<init>(TestRunner.java:54)
+	at junit.textui.TestRunner.<init>(TestRunner.java:48)
+	at junit.textui.TestRunner.<init>(TestRunner.java:41)
+
+...you will have to hand-edit your dependencies (in the IDE for IntelliJ, or hand-editing your IML file in Studio). See [deckard-gradle](https://github.com/robolectric/deckard-gradle) for details.
 
 Robolectric 2.2 or earlier
 -----------
