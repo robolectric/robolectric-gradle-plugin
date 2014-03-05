@@ -20,7 +20,7 @@ Basic Usage for JUnit / Robolectric
 
 Add the plugin to your `buildscript`'s `dependencies` section:
 ```groovy
-classpath 'com.robolectric.gradle:gradle-android-test-plugin:0.9.+'
+classpath 'org.robolectric.gradle:gradle-android-test-plugin:0.9.+'
 ```
 
 Apply the `android-test` plugin:
