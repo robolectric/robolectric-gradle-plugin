@@ -142,7 +142,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             testClassesTask.description = null
             testClassesTask.destinationDir = testDestinationDir
 
-            def testClasses = project.tasks.create('testClasses')
+            def testClasses = project.tasks.create("$projectFlavorName$buildTypeName" + 'TestClasses')
             testClasses.dependsOn testClassesTask
 
             // don't leave test resources behind
