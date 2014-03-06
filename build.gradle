@@ -22,7 +22,7 @@ dependencies {
 
   compile gradleApi()
   compile 'org.codehaus.groovy:groovy-all:2.2.+'
-  compile 'com.android.tools.build:gradle:0.7.+'
+  compile 'com.android.tools.build:gradle:0.8.3'
 
   testCompile 'junit:junit:4.10'
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
