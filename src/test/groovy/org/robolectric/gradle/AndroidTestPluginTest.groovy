@@ -32,10 +32,10 @@ class AndroidTestPluginTest {
     assertTrue(testDebugTask instanceof org.gradle.api.tasks.testing.Test)
   }
 
-  @Test public void supportsSettingAnExcludePattern_viaTheAndroidTestExtension() {
+  @Test public void supportsSettingAnExcludePattern_viaTheRobolectricTestExtension() {
     Project project = evaluatableProject()
 
-    project.androidTest {
+    project.robolectricTest {
       exclude "**/lame_tests/**"
     }
 
