@@ -49,7 +49,7 @@ Configuration using DSL
 -----
 
 ```groovy
-androidTest {
+robolectricTest {
     // configure the set of classes for JUnit tests
     include '**/*Test.class'
     exclude '**/espresso/**/*.class'
