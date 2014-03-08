@@ -9,8 +9,13 @@ A Gradle plugin which enables good 'ol fashioned unit tests for Android builds.
 This plugin is primarily focused on enabling Robolectric tests using gradle. The Android framework is not built with
 unit testing in mind. As such, the canonical framework to facilitate unit testing on the JVM is [Robolectric][robo].
 
+Compatibility
+--------
+Currently known to work with Gradle 1.10, Android Gradle Plugin 0.8.3, Android Studio 0.4.6, and IntelliJ Idea 13.
+
 Getting Started
 -----
+
 If you are starting a new app, or want to try this plugin in the simplest possible environment, the easisest way to start is to use [deckard-gradle](https://github.com/robolectric/deckard-gradle).
 
 deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.google.com/p/android-test-kit/wiki/Espresso) tests in Intellij, Android Studio or the command-line.
