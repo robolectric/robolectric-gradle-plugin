@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
+import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
 
 class AndroidTestPluginTest {
@@ -53,4 +54,61 @@ class AndroidTestPluginTest {
     def testDebugTask = project.tasks.testDebug
     assertTrue(testDebugTask.getExcludes().contains("**/lame_tests/**"))
   }
+
+    @Test public void uniqueTaskCreatedForEachFlavor() {
+        Project project = evaluatableProject()
+        project.android {
+            productFlavors {
+                prod {
+                }
+                beta {
+                }
+            }
+        }
+        project.evaluate()
+
+        assertNotNull(project.tasks.BetaDebugTestClasses)
+        assertNotNull(project.tasks.ProdDebugTestClasses)
+    }
+
+    @Test public void uniqueTaskCreatedForEachBuildType() {
+        Project project = evaluatableProject()
+        project.android {
+            buildTypes {
+                debug {
+                }
+                trial {
+                }
+            }
+        }
+        project.evaluate()
+
+        assertNotNull(project.tasks.DebugTestClasses)
+        assertNotNull(project.tasks.TrialTestClasses)
+    }
+
+    @Test public void uniqueTaskCreatedForEachFlavorAndBuildType() {
+        Project project = evaluatableProject()
+        project.android {
+            productFlavors {
+                prod {
+                }
+                beta {
+                }
+            }
+
+            buildTypes {
+                debug {
+                }
+                trial {
+                }
+            }
+        }
+        project.evaluate()
+
+        assertNotNull(project.tasks.BetaDebugTestClasses)
+        assertNotNull(project.tasks.BetaTrialTestClasses)
+        assertNotNull(project.tasks.ProdDebugTestClasses)
+        assertNotNull(project.tasks.ProdTrialTestClasses)
+    }
 }
