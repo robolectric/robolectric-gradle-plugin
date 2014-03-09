@@ -2,10 +2,13 @@ package org.robolectric.gradle
 
 import org.fest.assertions.api.Assertions
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Ignore
 import org.junit.Test
 
 import static org.junit.Assert.assertNotNull
+import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
 class AndroidTestPluginTest {
@@ -32,10 +35,10 @@ class AndroidTestPluginTest {
     assertTrue(testDebugTask instanceof org.gradle.api.tasks.testing.Test)
   }
 
-  @Test public void supportsSettingAnExcludePattern_viaTheRobolectricTestExtension() {
+  @Test public void supportsSettingAnExcludePattern_viaTheAndroidTestExtension() {
     Project project = evaluatableProject()
 
-    project.robolectricTest {
+    project.androidTest {
       exclude "**/lame_tests/**"
     }
 
@@ -111,4 +114,61 @@ class AndroidTestPluginTest {
         }
         return project
     }
+
+  /**
+   * To enable this test, you must do following modifications:
+   *   1. Modify ${rootProject}/build.gradle to use android gradle 0.8.3
+   *   2. Disable 0.9.0 test: parseInstrumentTestCompile_androidGradle_0_9_0
+   */
+  @Test @Ignore public void parseInstrumentTestCompile_androidGradle_0_8_x() {
+      String androidGradleTool = "com.android.tools.build:gradle:0.8.3"
+      String configurationName = "instrumentTestCompile"
+      parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
+  }
+
+  @Test public void parseInstrumentTestCompile_androidGradle_0_9_0() {
+    String androidGradleTool = "com.android.tools.build:gradle:0.9.0"
+    String configurationName = "androidTestCompile"
+    parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
+  }
+
+  private void parseTestCompileDependencyWithAndroidGradle(String androidGradleTool, String configurationName) {
+    Project project = ProjectBuilder.builder().build()
+    project.buildscript {
+      repositories {
+        mavenCentral()
+      }
+      dependencies {
+        classpath androidGradleTool
+      }
+    }
+    project.repositories {
+      mavenCentral()
+    }
+    project.apply plugin: 'android'
+    project.apply plugin: 'android-test'
+    project.android {
+      compileSdkVersion 19
+      buildToolsVersion "19.0.1"
+    }
+
+    project.evaluate()
+    project.dependencies.add(configurationName, 'junit:junit:4.11')
+
+    Set<Task> testTaskSet = project.getTasksByName("test", false)
+    assertEquals(1, testTaskSet.size())
+
+    Set<Task> compileTestDebugJavaTaskSet = project.getTasksByName("compileTestDebugJava", false)
+    assertEquals(1, compileTestDebugJavaTaskSet.size())
+    Task compileDebugJavaTask = compileTestDebugJavaTaskSet.iterator().next()
+    String filePathComponent = "junit" + File.separator + "junit" + File.separator + "4.11"
+    boolean found = false
+    for (File file : compileDebugJavaTask.classpath.getFiles()) {
+      if (file.toString().contains(filePathComponent)) {
+        found = true
+        break
+      }
+    }
+    assertTrue(found)
+  }
 }
