@@ -19,7 +19,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     private static final String TEST_REPORT_DIR = "test-report"
 
     void apply(Project project) {
-        def extension = project.extensions.create('robolectricTest', RobolectricTestExtension)
+        def extension = project.extensions.create('androidTest', RobolectricTestExtension)
 
         def hasAppPlugin = project.plugins.hasPlugin AppPlugin
         def hasLibraryPlugin = project.plugins.hasPlugin LibraryPlugin
