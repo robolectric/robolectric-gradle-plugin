@@ -10,17 +10,6 @@ import static org.junit.Assert.assertTrue
 
 class AndroidTestPluginTest {
 
-  public Project evaluatableProject() throws Exception {
-    Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build();
-    project.apply plugin: 'android'
-    project.apply plugin: 'android-test'
-    project.android {
-      compileSdkVersion 19
-      buildToolsVersion "19.0.1"
-    }
-    return project
-  }
-
   @Test public void pluginDetectsLibraryPlugin() {
     Project project = ProjectBuilder.builder().build()
     project.apply plugin: 'android-library'
@@ -110,5 +99,16 @@ class AndroidTestPluginTest {
         assertNotNull(project.tasks.BetaTrialTestClasses)
         assertNotNull(project.tasks.ProdDebugTestClasses)
         assertNotNull(project.tasks.ProdTrialTestClasses)
+    }
+
+    private Project evaluatableProject() throws Exception {
+        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build();
+        project.apply plugin: 'android'
+        project.apply plugin: 'android-test'
+        project.android {
+            compileSdkVersion 19
+            buildToolsVersion "19.0.3"
+        }
+        return project
     }
 }
