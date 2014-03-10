@@ -139,13 +139,13 @@ You can run the plugin in the debugger, but it takes some setup.
 2. Create or retrieve GPG keypair; see the [sonatype docs](https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide) for more info on how to use GPG for signing.
 
 3. Check your GPG install works by typing 'gpg --list-keys'. You should see something like this:
-```/Users/pivotal/.gnupg/pubring.gpg
----------------------------------
-pub   4096R/FAE67CFD 2013-08-30 [expires: 2018-08-29]
-uid                  Pivotal Robolectric (Mike and Corey) <android-developers@pivotallabs.com>
-sub   4096R/87EAC09D 2013-08-30 [expires: 2018-08-29]
-```
-
+    ```bash
+    /Users/pivotal/.gnupg/pubring.gpg
+    ---------------------------------
+    pub   4096R/FAE67CFD 2013-08-30 [expires: 2018-08-29]
+    uid                  Pivotal Robolectric (Mike and Corey) <android-developers@pivotallabs.com>
+    sub   4096R/87EAC09D 2013-08-30 [expires: 2018-08-29]
+    ```
 4. Set up passwords and other stuff in ~/.gradle/gradle.properties:
 nexusUsername=<e.g. 'pivotal'>
 nexusPassword=<your nexus password>
