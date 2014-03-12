@@ -137,13 +137,16 @@ class AndroidTestPlugin implements Plugin<Project> {
             }
 
             // Clear out the group/description of the classes plugin so it's not top-level.
-            def testClassesTask = project.tasks.getByName variationSources.classesTaskName
-            testClassesTask.group = null
-            testClassesTask.description = null
-            testClassesTask.destinationDir = testDestinationDir
+            def testClassesTaskPerVariation = project.tasks.getByName variationSources.classesTaskName
+            testClassesTaskPerVariation.group = null
+            testClassesTaskPerVariation.description = null
+            testClassesTaskPerVariation.destinationDir = testDestinationDir
 
-            def testClasses = project.tasks.create("$projectFlavorName$buildTypeName" + 'TestClasses')
-            testClasses.dependsOn testClassesTask
+            def testClassesTaskPerFlavor = project.tasks.create("$projectFlavorName$buildTypeName" + 'TestClasses')
+            testClassesTaskPerFlavor.dependsOn testClassesTaskPerVariation
+
+            def testClassesTask = project.tasks.maybeCreate('testClasses')
+            testClassesTask.dependsOn testClassesTaskPerVariation
 
             // don't leave test resources behind
             def processResourcesTask = project.tasks.getByName variationSources.processResourcesTaskName
@@ -152,7 +155,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             // Create a task which runs the compiled test classes.
             def taskRunName = "$TEST_TASK_NAME$variationName"
             def testRunTask = project.tasks.create(taskRunName, Test)
-            testRunTask.dependsOn testClassesTask
+            testRunTask.dependsOn testClassesTaskPerVariation
             testRunTask.inputs.sourceFiles.from.clear()
             testRunTask.classpath = testRunClasspath
             testRunTask.testClassesDir = testCompileTask.destinationDir
