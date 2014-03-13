@@ -11,4 +11,4 @@ before_install:
     - source ~/.android-sdk-installer/env
 
 script:
-  - ./gradlew check --info
+  - ./gradlew check --stacktrace
