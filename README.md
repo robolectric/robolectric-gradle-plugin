@@ -11,12 +11,12 @@ unit testing in mind. As such, the canonical framework to facilitate unit testin
 
 Compatibility
 --------
-Currently known to work with Gradle 1.10, Android Gradle Plugin 0.8.3, Android Studio 0.4.6, and IntelliJ Idea 13.
+Currently known to work with Gradle 1.10, Android Gradle Plugin 0.9.x, Android Studio 0.5.1, and IntelliJ IDEA 13.
 
 Getting Started
 -----
 
-If you are starting a new app, or want to try this plugin in the simplest possible environment, the easisest way to start is to use [deckard-gradle](https://github.com/robolectric/deckard-gradle).
+If you are starting a new app, or want to try this plugin in the simplest possible environment, the easiest way to start is to use [deckard-gradle](https://github.com/robolectric/deckard-gradle).
 
 deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.google.com/p/android-test-kit/wiki/Espresso) tests in Intellij, Android Studio or the command-line.
 
@@ -33,11 +33,11 @@ Apply the `android-test` plugin:
 apply plugin: 'android-test'
 ```
 
-Add test-only dependencies using the `instrumentTestCompile` configuration:
+Add test-only dependencies using the `androidTestCompile` configuration:
 ```groovy
-instrumentTestCompile 'junit:junit:4.10'
-instrumentTestCompile 'org.robolectric:robolectric:2.1.+'
-instrumentTestCompile 'com.squareup:fest-android:1.0.+'
+androidTestCompile 'junit:junit:4.10'
+androidTestCompile 'org.robolectric:robolectric:2.1.+'
+androidTestCompile 'com.squareup:fest-android:1.0.+'
 ```
 
 Write your tests in `src/test/java/`! You can also add per-build type and per-flavor tests by using
@@ -166,7 +166,7 @@ When successful, the artifact will be in a staging repository on oss.sonatype.or
 
 Future Directions
 ------------------
-- Change use of 'instrumentTestCompile' to 'testCompile' - more like standard Java plugin
+- Change use of 'androidTestCompile' to 'testCompile' - more like standard Java plugin
 - Pull in bits of [SuperJugy's plugin](https://github.com/SuperJugy/android-unit-test), especially the single-test command-line support && better code structure
 - Maybe disappear if we can get the Android Tools team to support JUnit out of the box
 
