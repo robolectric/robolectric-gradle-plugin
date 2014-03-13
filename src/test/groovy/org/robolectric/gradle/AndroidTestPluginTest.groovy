@@ -3,7 +3,6 @@ package org.robolectric.gradle
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Ignore
 import org.junit.Test
 
 import static org.fest.assertions.api.Assertions.assertThat
@@ -145,17 +144,6 @@ class AndroidTestPluginTest {
         }
         return project
     }
-
-  /**
-   * To enable this test, you must do following modifications:
-   *   1. Modify ${rootProject}/build.gradle to use android gradle 0.8.3
-   *   2. Disable 0.9.0 test: parseInstrumentTestCompile_androidGradle_0_9_0
-   */
-  @Test @Ignore public void parseInstrumentTestCompile_androidGradle_0_8_x() {
-      String androidGradleTool = "com.android.tools.build:gradle:0.8.3"
-      String configurationName = "instrumentTestCompile"
-      parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
-  }
 
   @Test public void parseInstrumentTestCompile_androidGradle_0_9_0() {
     String androidGradleTool = "com.android.tools.build:gradle:0.9.0"
