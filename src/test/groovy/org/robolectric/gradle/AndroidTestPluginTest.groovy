@@ -168,11 +168,11 @@ class AndroidTestPluginTest {
     project.apply plugin: 'android-test'
     project.android {
       compileSdkVersion 19
-      buildToolsVersion "19.0.1"
+      buildToolsVersion "19.0.3"
     }
 
     project.evaluate()
-    project.dependencies.add(configurationName, 'junit:junit:4.11')
+    project.dependencies.add(configurationName, 'junit:junit:4.8')
 
     Set<Task> testTaskSet = project.getTasksByName("test", false)
     assertEquals(1, testTaskSet.size())
@@ -180,7 +180,7 @@ class AndroidTestPluginTest {
     Set<Task> compileTestDebugJavaTaskSet = project.getTasksByName("compileTestDebugJava", false)
     assertEquals(1, compileTestDebugJavaTaskSet.size())
     Task compileDebugJavaTask = compileTestDebugJavaTaskSet.iterator().next()
-    String filePathComponent = "junit" + File.separator + "junit" + File.separator + "4.11"
+    String filePathComponent = "junit" + File.separator + "junit" + File.separator + "4.8"
     boolean found = false
     for (File file : compileDebugJavaTask.classpath.getFiles()) {
       if (file.toString().contains(filePathComponent)) {
