@@ -141,7 +141,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             def testClassesTaskPerVariation = project.tasks.getByName variationSources.classesTaskName
             testClassesTaskPerVariation.group = null
             testClassesTaskPerVariation.description = null
-            testClassesTaskPerVariation.destinationDir = testDestinationDir
+            testClassesTaskPerVariation.destinationDir = testDestinationDir.getSingleFile()
 
             def testClassesTaskPerFlavor = project.tasks.create("$projectFlavorName$buildTypeName" + 'TestClasses')
             testClassesTaskPerFlavor.dependsOn testClassesTaskPerVariation
