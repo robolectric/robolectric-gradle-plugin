@@ -93,7 +93,7 @@ class AndroidTestPlugin implements Plugin<Project> {
 
             def testSrcDirs = []
             SourceSet variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
-            def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
+            def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR")
             def testRunClasspath = testCompileClasspath.plus testDestinationDir
 
             TEST_DIRS.each { testDir ->
