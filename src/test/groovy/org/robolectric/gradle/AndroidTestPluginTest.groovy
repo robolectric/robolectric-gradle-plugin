@@ -2,10 +2,12 @@ package org.robolectric.gradle
 
 import org.fest.assertions.api.Assertions
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
 import static org.junit.Assert.assertNotNull
+import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
 class AndroidTestPluginTest {
@@ -111,4 +113,50 @@ class AndroidTestPluginTest {
         }
         return project
     }
+
+  @Test public void parseInstrumentTestCompile_androidGradle_0_9_0() {
+    String androidGradleTool = "com.android.tools.build:gradle:0.9.0"
+    String configurationName = "androidTestCompile"
+    parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
+  }
+
+  private void parseTestCompileDependencyWithAndroidGradle(String androidGradleTool, String configurationName) {
+    Project project = ProjectBuilder.builder().build()
+    project.buildscript {
+      repositories {
+        mavenCentral()
+      }
+      dependencies {
+        classpath androidGradleTool
+      }
+    }
+    project.repositories {
+      mavenCentral()
+    }
+    project.apply plugin: 'android'
+    project.apply plugin: 'android-test'
+    project.android {
+      compileSdkVersion 19
+      buildToolsVersion "19.0.3"
+    }
+
+    project.evaluate()
+    project.dependencies.add(configurationName, 'junit:junit:4.8')
+
+    Set<Task> testTaskSet = project.getTasksByName("test", false)
+    assertEquals(1, testTaskSet.size())
+
+    Set<Task> compileTestDebugJavaTaskSet = project.getTasksByName("compileTestDebugJava", false)
+    assertEquals(1, compileTestDebugJavaTaskSet.size())
+    Task compileDebugJavaTask = compileTestDebugJavaTaskSet.iterator().next()
+    String filePathComponent = "junit" + File.separator + "junit" + File.separator + "4.8"
+    boolean found = false
+    for (File file : compileDebugJavaTask.classpath.getFiles()) {
+      if (file.toString().contains(filePathComponent)) {
+        found = true
+        break
+      }
+    }
+    assertTrue(found)
+  }
 }

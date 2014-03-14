@@ -1,6 +1,6 @@
 package org.robolectric.gradle
 
-class AndroidTestExtension {
+class RobolectricTestExtension {
     private String maxHeapSize
     private String includePattern
     private String excludePattern

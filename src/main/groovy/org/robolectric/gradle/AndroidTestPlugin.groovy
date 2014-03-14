@@ -13,13 +13,13 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
 
 class AndroidTestPlugin implements Plugin<Project> {
-    private static final String[] TEST_DIRS = ['test', 'instrumentTest']
+    private static final String[] TEST_DIRS = ['test', 'androidTest']
     private static final String TEST_TASK_NAME = 'test'
     private static final String TEST_CLASSES_DIR = "test-classes"
     private static final String TEST_REPORT_DIR = "test-report"
 
     void apply(Project project) {
-        def extension = project.extensions.create('androidTest', AndroidTestExtension)
+        def extension = project.extensions.create('androidTest', RobolectricTestExtension)
 
         def hasAppPlugin = project.plugins.hasPlugin AppPlugin
         def hasLibraryPlugin = project.plugins.hasPlugin LibraryPlugin
@@ -86,10 +86,11 @@ class AndroidTestPlugin implements Plugin<Project> {
 
             // Add the corresponding java compilation output to the 'testCompile' configuration to
             // create the classpath for the test file compilation.
-            def instrumentTestConfig = project.configurations.getByName('instrumentTestCompile')
+            def robolectricTestConfig = project.configurations.getByName("androidTestCompile")
+
             def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir,
                     javaCompile.classpath)
-            testCompileClasspath.add instrumentTestConfig
+            testCompileClasspath.add robolectricTestConfig
 
             def testSrcDirs = []
             SourceSet variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
