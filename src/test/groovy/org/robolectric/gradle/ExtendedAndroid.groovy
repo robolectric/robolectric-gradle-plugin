@@ -5,5 +5,5 @@ package org.robolectric.gradle
  * For gradle-android-test-plugin.
  */
 class ExtendedAndroid {
-    def String message = 'Hello from TestAndroidPlugin'
+  def String message = 'Hello from TestAndroidPlugin'
 }

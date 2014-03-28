@@ -9,15 +9,15 @@ import javax.inject.Inject
 
 class ExtendedAppPlugin extends AppPlugin {
 
-    @Inject
-    ExtendedAppPlugin(Instantiator instantiator, ToolingModelBuilderRegistry registry) {
-        super(instantiator, registry)
-    }
+  @Inject
+  ExtendedAppPlugin(Instantiator instantiator, ToolingModelBuilderRegistry registry) {
+    super(instantiator, registry)
+  }
 
-    @Override
-    void apply(Project project) {
-        super.apply(project)
-        project.extensions.create("extended-android", ExtendedAndroid)
-    }
+  @Override
+  void apply(Project project) {
+    super.apply(project)
+    project.extensions.create("extended-android", ExtendedAndroid)
+  }
 }
 
