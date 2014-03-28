@@ -3,6 +3,7 @@ package org.robolectric.gradle
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Ignore
 import org.junit.Test
 
 import static org.fest.assertions.api.Assertions.assertThat
@@ -29,13 +30,27 @@ class AndroidTestPluginTest {
         }
     }
 
-    @Test
-    public void createsATestTaskForTheDebugVariant() {
-        Project project = evaluatableProject()
-        project.evaluate()
-        def testDebugTask = project.tasks.testDebug
-        assertTrue(testDebugTask instanceof org.gradle.api.tasks.testing.Test)
-    }
+  @Test 
+  public void pluginDetectsAppPlugin(){
+      Project project = ProjectBuilder.builder().build()
+      project.apply plugin: 'android'
+      project.apply plugin: 'android-test'
+  }
+
+  @Test 
+  public void pluginDetectsExtendedAppPlugin(){
+      Project project = ProjectBuilder.builder().build()
+      project.apply plugin: 'extended-android'
+      project.apply plugin: 'android-test'
+  }
+
+  @Test 
+  public void createsATestTaskForTheDebugVariant() {
+    Project project = evaluatableProject()
+    project.evaluate()
+    def testDebugTask = project.tasks.testDebug
+    assertTrue(testDebugTask instanceof org.gradle.api.tasks.testing.Test)
+  }
 
     @Test
     public void supportsSettingAnExcludePattern_viaTheAndroidTestExtension() {
@@ -145,6 +160,7 @@ class AndroidTestPluginTest {
         return project
     }
 
+  @Ignore
   @Test public void parseInstrumentTestCompile_androidGradle_0_9_0() {
     String androidGradleTool = "com.android.tools.build:gradle:0.9.0"
     String configurationName = "androidTestCompile"
