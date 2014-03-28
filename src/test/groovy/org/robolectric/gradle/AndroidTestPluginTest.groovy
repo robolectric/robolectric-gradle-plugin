@@ -6,9 +6,8 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
 import static org.fest.assertions.api.Assertions.assertThat
-import static org.junit.Assert.assertNotNull
-import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertTrue
+import static org.fest.assertions.api.Assertions.fail
+import static org.junit.Assert.*
 
 class AndroidTestPluginTest {
 
@@ -20,13 +19,35 @@ class AndroidTestPluginTest {
     }
 
     @Test
+    public void pluginDetectsExtendedLibraryPlugin() {
+        Project project = ProjectBuilder.builder().build()
+        project.apply plugin: 'extended-android-library'
+        project.apply plugin: 'android-test'
+    }
+
+    @Test
     public void pluginFailsWithoutAndroidPlugin() {
         Project project = ProjectBuilder.builder().build()
         try {
             project.apply plugin: 'android-test'
+            fail("Failed to throw exception for missing plugin")
         } catch (IllegalStateException e) {
             assertThat(e).hasMessage("The 'android' or 'android-library' plugin is required.");
         }
+    }
+
+    @Test
+    public void pluginDetectsAppPlugin() {
+        Project project = ProjectBuilder.builder().build()
+        project.apply plugin: 'android'
+        project.apply plugin: 'android-test'
+    }
+
+    @Test
+    public void pluginDetectsExtendedAppPlugin() {
+        Project project = ProjectBuilder.builder().build()
+        project.apply plugin: 'extended-android'
+        project.apply plugin: 'android-test'
     }
 
     @Test
@@ -50,13 +71,15 @@ class AndroidTestPluginTest {
         assertTrue(testDebugTask.getExcludes().contains("**/lame_tests/**"))
     }
 
-    @Test public void createsGenericTestClassesTask() {
+    @Test
+    public void createsGenericTestClassesTask() {
         Project project = evaluatableProject()
         project.evaluate()
         assertNotNull(project.tasks.testClasses)
     }
 
-    @Test public void dumpsAllTestClassFilesAndResourcesIntoTheSameDirectory() {
+    @Test
+    public void dumpsAllTestClassFilesAndResourcesIntoTheSameDirectory() {
         Project project = evaluatableProject()
         project.android {
             productFlavors {
@@ -77,7 +100,8 @@ class AndroidTestPluginTest {
         assertThat(project.tasks.processTestBetaDebugResources.destinationDir).isEqualTo(expectedDestination)
     }
 
-    @Test public void uniqueTaskCreatedForEachFlavor() {
+    @Test
+    public void uniqueTaskCreatedForEachFlavor() {
         Project project = evaluatableProject()
         project.android {
             productFlavors {
@@ -93,7 +117,8 @@ class AndroidTestPluginTest {
         assertNotNull(project.tasks.ProdDebugTestClasses)
     }
 
-    @Test public void uniqueTaskCreatedForEachBuildType() {
+    @Test
+    public void uniqueTaskCreatedForEachBuildType() {
         Project project = evaluatableProject()
         project.android {
             buildTypes {
@@ -109,7 +134,8 @@ class AndroidTestPluginTest {
         assertNotNull(project.tasks.TrialTestClasses)
     }
 
-    @Test public void uniqueTaskCreatedForEachFlavorAndBuildType() {
+    @Test
+    public void uniqueTaskCreatedForEachFlavorAndBuildType() {
         Project project = evaluatableProject()
         project.android {
             productFlavors {
@@ -145,49 +171,50 @@ class AndroidTestPluginTest {
         return project
     }
 
-  @Test public void parseInstrumentTestCompile_androidGradle_0_9_0() {
-    String androidGradleTool = "com.android.tools.build:gradle:0.9.0"
-    String configurationName = "androidTestCompile"
-    parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
-  }
-
-  private void parseTestCompileDependencyWithAndroidGradle(String androidGradleTool, String configurationName) {
-    Project project = ProjectBuilder.builder().build()
-    project.buildscript {
-      repositories {
-        mavenCentral()
-      }
-      dependencies {
-        classpath androidGradleTool
-      }
-    }
-    project.repositories {
-      mavenCentral()
-    }
-    project.apply plugin: 'android'
-    project.apply plugin: 'android-test'
-    project.android {
-      compileSdkVersion 19
-      buildToolsVersion "19.0.3"
+    @Test
+    public void parseInstrumentTestCompile_androidGradle_0_9_0() {
+        String androidGradleTool = "com.android.tools.build:gradle:0.9.0"
+        String configurationName = "androidTestCompile"
+        parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
     }
 
-    project.evaluate()
-    project.dependencies.add(configurationName, 'junit:junit:4.8')
+    private void parseTestCompileDependencyWithAndroidGradle(String androidGradleTool, String configurationName) {
+        Project project = ProjectBuilder.builder().build()
+        project.buildscript {
+            repositories {
+                mavenCentral()
+            }
+            dependencies {
+                classpath androidGradleTool
+            }
+        }
+        project.repositories {
+            mavenCentral()
+        }
+        project.apply plugin: 'android'
+        project.apply plugin: 'android-test'
+        project.android {
+            compileSdkVersion 19
+            buildToolsVersion "19.0.3"
+        }
 
-    Set<Task> testTaskSet = project.getTasksByName("test", false)
-    assertEquals(1, testTaskSet.size())
+        project.evaluate()
+        project.dependencies.add(configurationName, 'junit:junit:4.8')
 
-    Set<Task> compileTestDebugJavaTaskSet = project.getTasksByName("compileTestDebugJava", false)
-    assertEquals(1, compileTestDebugJavaTaskSet.size())
-    Task compileDebugJavaTask = compileTestDebugJavaTaskSet.iterator().next()
-    String filePathComponent = "junit" + File.separator + "junit" + File.separator + "4.8"
-    boolean found = false
-    for (File file : compileDebugJavaTask.classpath.getFiles()) {
-      if (file.toString().contains(filePathComponent)) {
-        found = true
-        break
-      }
+        Set<Task> testTaskSet = project.getTasksByName("test", false)
+        assertEquals(1, testTaskSet.size())
+
+        Set<Task> compileTestDebugJavaTaskSet = project.getTasksByName("compileTestDebugJava", false)
+        assertEquals(1, compileTestDebugJavaTaskSet.size())
+        Task compileDebugJavaTask = compileTestDebugJavaTaskSet.iterator().next()
+        String filePathComponent = "junit" + File.separator + "junit" + File.separator + "4.8"
+        boolean found = false
+        for (File file : compileDebugJavaTask.classpath.getFiles()) {
+            if (file.toString().contains(filePathComponent)) {
+                found = true
+                break
+            }
+        }
+        assertTrue(found)
     }
-    assertTrue(found)
-  }
 }
