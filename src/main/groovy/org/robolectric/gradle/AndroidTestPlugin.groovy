@@ -21,9 +21,18 @@ class AndroidTestPlugin implements Plugin<Project> {
     void apply(Project project) {
         def extension = project.extensions.create('androidTest', RobolectricTestExtension)
 
-        def hasAppPlugin = project.plugins.hasPlugin AppPlugin
-        def hasLibraryPlugin = project.plugins.hasPlugin LibraryPlugin
         def log = project.logger
+        // Iterate through the plugins to find an instance of the app/lib plugin
+        def hasAppPlugin = false, hasLibraryPlugin = false;
+        def thePlugin = null;
+        project.plugins.each { plugin ->
+            if (plugin instanceof AppPlugin) hasAppPlugin = true
+            else if (plugin instanceof LibraryPlugin) hasLibraryPlugin = true
+            if (hasAppPlugin || hasLibraryPlugin) {
+                thePlugin = plugin
+                return true
+            }
+        }
 
         // Ensure the Android plugin has been added in app or library form, but not both.
         if (!hasAppPlugin && !hasLibraryPlugin) {
@@ -50,7 +59,8 @@ class AndroidTestPlugin implements Plugin<Project> {
         // Add our new task to Gradle's standard "check" task.
         project.tasks.check.dependsOn testTask
 
-        BasePlugin plugin = project.plugins.getPlugin(hasAppPlugin ? AppPlugin : LibraryPlugin);
+        // Set the pluging we captured earlier
+        BasePlugin plugin = thePlugin;
 
         def variants = hasAppPlugin ? project.android.applicationVariants :
                 project.android.libraryVariants
