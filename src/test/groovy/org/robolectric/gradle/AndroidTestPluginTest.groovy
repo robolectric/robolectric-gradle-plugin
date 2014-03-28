@@ -1,5 +1,6 @@
 package org.robolectric.gradle
 
+import org.fest.assertions.api.Assertions
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
@@ -20,15 +21,22 @@ class AndroidTestPluginTest {
         project.apply plugin: 'android-test'
     }
 
-    @Test
-    public void pluginFailsWithoutAndroidPlugin() {
-        Project project = ProjectBuilder.builder().build()
-        try {
-            project.apply plugin: 'android-test'
-        } catch (IllegalStateException e) {
-            assertThat(e).hasMessage("The 'android' or 'android-library' plugin is required.");
-        }
+  @Test 
+  public void pluginDetectsExtendedLibraryPlugin() {
+    Project project = ProjectBuilder.builder().build()
+    project.apply plugin: 'extended-android-library'
+    project.apply plugin: 'android-test'
+  }
+
+  @Test 
+  public void pluginFailsWithoutAndroidPlugin() {
+    Project project = ProjectBuilder.builder().build()
+    try {
+      project.apply plugin: 'android-test'
+    } catch (IllegalStateException e) {
+        Assertions.assertThat(e).hasMessage("The 'android' or 'android-library' plugin is required.");
     }
+  }
 
   @Test 
   public void pluginDetectsAppPlugin(){
