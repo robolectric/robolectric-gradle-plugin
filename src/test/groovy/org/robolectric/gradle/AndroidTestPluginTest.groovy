@@ -1,50 +1,81 @@
 package org.robolectric.gradle
 
-import org.fest.assertions.api.Assertions
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
+import static org.fest.assertions.api.Assertions.assertThat
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
 class AndroidTestPluginTest {
 
-  @Test public void pluginDetectsLibraryPlugin() {
-    Project project = ProjectBuilder.builder().build()
-    project.apply plugin: 'android-library'
-    project.apply plugin: 'android-test'
-  }
-
-  @Test public void pluginFailsWithoutAndroidPlugin() {
-    Project project = ProjectBuilder.builder().build()
-    try {
-      project.apply plugin: 'android-test'
-    } catch (IllegalStateException e) {
-      Assertions.assertThat(e).hasMessage("The 'android' or 'android-library' plugin is required.");
-    }
-  }
-
-  @Test public void createsATestTaskForTheDebugVariant() {
-    Project project = evaluatableProject()
-    project.evaluate()
-    def testDebugTask = project.tasks.testDebug
-    assertTrue(testDebugTask instanceof org.gradle.api.tasks.testing.Test)
-  }
-
-  @Test public void supportsSettingAnExcludePattern_viaTheAndroidTestExtension() {
-    Project project = evaluatableProject()
-
-    project.androidTest {
-      exclude "**/lame_tests/**"
+    @Test
+    public void pluginDetectsLibraryPlugin() {
+        Project project = ProjectBuilder.builder().build()
+        project.apply plugin: 'android-library'
+        project.apply plugin: 'android-test'
     }
 
-    project.evaluate()
-    def testDebugTask = project.tasks.testDebug
-    assertTrue(testDebugTask.getExcludes().contains("**/lame_tests/**"))
-  }
+    @Test
+    public void pluginFailsWithoutAndroidPlugin() {
+        Project project = ProjectBuilder.builder().build()
+        try {
+            project.apply plugin: 'android-test'
+        } catch (IllegalStateException e) {
+            assertThat(e).hasMessage("The 'android' or 'android-library' plugin is required.");
+        }
+    }
+
+    @Test
+    public void createsATestTaskForTheDebugVariant() {
+        Project project = evaluatableProject()
+        project.evaluate()
+        def testDebugTask = project.tasks.testDebug
+        assertTrue(testDebugTask instanceof org.gradle.api.tasks.testing.Test)
+    }
+
+    @Test
+    public void supportsSettingAnExcludePattern_viaTheAndroidTestExtension() {
+        Project project = evaluatableProject()
+
+        project.androidTest {
+            exclude "**/lame_tests/**"
+        }
+
+        project.evaluate()
+        def testDebugTask = project.tasks.testDebug
+        assertTrue(testDebugTask.getExcludes().contains("**/lame_tests/**"))
+    }
+
+    @Test public void createsGenericTestClassesTask() {
+        Project project = evaluatableProject()
+        project.evaluate()
+        assertNotNull(project.tasks.testClasses)
+    }
+
+    @Test public void dumpsAllTestClassFilesAndResourcesIntoTheSameDirectory() {
+        Project project = evaluatableProject()
+        project.android {
+            productFlavors {
+                prod {
+                }
+                beta {
+                }
+            }
+        }
+        project.evaluate()
+        def expectedDestination = project.files("$project.buildDir/test-classes").singleFile
+
+        assertThat(project.tasks.compileTestProdDebugJava.destinationDir).isEqualTo(expectedDestination)
+        assertThat(project.tasks.compileTestBetaDebugJava.destinationDir).isEqualTo(expectedDestination)
+        assertThat(project.tasks.testProdDebugClasses.destinationDir).isEqualTo(expectedDestination)
+        assertThat(project.tasks.testBetaDebugClasses.destinationDir).isEqualTo(expectedDestination)
+        assertThat(project.tasks.processTestProdDebugResources.destinationDir).isEqualTo(expectedDestination)
+        assertThat(project.tasks.processTestBetaDebugResources.destinationDir).isEqualTo(expectedDestination)
+    }
 
     @Test public void uniqueTaskCreatedForEachFlavor() {
         Project project = evaluatableProject()
