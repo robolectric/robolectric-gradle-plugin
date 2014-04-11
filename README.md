@@ -147,21 +147,23 @@ You can run the plugin in the debugger, but it takes some setup.
     sub   4096R/87EAC09D 2013-08-30 [expires: 2018-08-29]
     ```
 4. Set up passwords and other stuff in ~/.gradle/gradle.properties:
-nexusUsername=<e.g. 'pivotal'>
-nexusPassword=<your nexus password>
-signing.keyId=<id matching above output of gpg --list-keys>
-signing.password=<gpg private key passphrase>
-signing.secretKeyRingFile=<home directory>/.gnupg/secring.gpg
+    ```
+       nexusUsername=<e.g. 'pivotal'>
+       nexusPassword=<your nexus password>
+       signing.keyId=<id matching above output of gpg --list-keys>
+       signing.password=<gpg private key passphrase>
+       signing.secretKeyRingFile=<home directory>/.gnupg/secring.gpg
+    ```
 
 5. Run ./gradlew uploadArchives
 When successful, the artifact will be in a staging repository on oss.sonatype.org.
 
 6. Promote the artifact on Sonatype
-  6.1 Go to http://oss.sonatype.org and login.
-  6.2 Find the staging repository by clicking (on the left) on 'Staging Repositories' under 'Build Promotion'. The newly pushed artifact should be the last item on the list.
-  6.3 On the toolbar up top, press 'close'. This operation will take a while so you may need to refresh, but eventually the staging repository will be "closed" - look under the 'activity' tab when you've got it selected and you should see the various steps of the closing process
-  6.4 Once closed, you can press 'Release' in the toolbar. Again this will take some time, but when it's done there will no longer be an entry in the 'staging repositories' section. You can find the newly published artifact by browsing the normal repository.
-  6.5 Wait. It will take some time before it appears on Maven Central - usually a few hours but less than a day.
+  1. Go to http://oss.sonatype.org and login.
+  2. Find the staging repository by clicking (on the left) on 'Staging Repositories' under 'Build Promotion'. The newly pushed artifact should be the last item on the list.
+  3. On the toolbar up top, press 'close'. This operation will take a while so you may need to refresh, but eventually the staging repository will be "closed" - look under the 'activity' tab when you've got it selected and you should see the various steps of the closing process
+  4. Once closed, you can press 'Release' in the toolbar. Again this will take some time, but when it's done there will no longer be an entry in the 'staging repositories' section. You can find the newly published artifact by browsing the normal repository.
+  5. Wait. It will take some time before it appears on Maven Central - usually a few hours but less than a day.
 
 
 Future Directions
