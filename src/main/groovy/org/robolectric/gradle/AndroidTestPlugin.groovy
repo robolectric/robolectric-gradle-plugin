@@ -59,7 +59,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         // Add our new task to Gradle's standard "check" task.
         project.tasks.check.dependsOn testTask
 
-        // Set the pluging we captured earlier
+        // Set the plugin we captured earlier
         BasePlugin plugin = thePlugin;
 
         def variants = hasAppPlugin ? project.android.applicationVariants :
