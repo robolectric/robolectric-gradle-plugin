@@ -172,8 +172,8 @@ class AndroidTestPluginTest {
     }
 
     @Test
-    public void parseInstrumentTestCompile_androidGradle_0_9_0() {
-        String androidGradleTool = "com.android.tools.build:gradle:0.9.0"
+    public void parseInstrumentTestCompile_androidGradle_0_10_0() {
+        String androidGradleTool = "com.android.tools.build:gradle:0.10.0"
         String configurationName = "androidTestCompile"
         parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
     }
