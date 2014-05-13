@@ -1,35 +1,33 @@
 package org.robolectric.gradle
 
-import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
+import org.junit.Ignore
+import org.gradle.api.Task
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import static org.fest.assertions.api.Assertions.*
 
-import static org.fest.assertions.api.Assertions.assertThat
-import static org.fest.assertions.api.Assertions.fail
-import static org.junit.Assert.*
-
-class AndroidTestPluginTest {
+class RobolectricPluginTest {
 
     @Test
     public void pluginDetectsLibraryPlugin() {
         Project project = ProjectBuilder.builder().build()
         project.apply plugin: 'android-library'
-        project.apply plugin: 'android-test'
+        project.apply plugin: 'robolectric'
     }
 
     @Test
     public void pluginDetectsExtendedLibraryPlugin() {
         Project project = ProjectBuilder.builder().build()
         project.apply plugin: 'extended-android-library'
-        project.apply plugin: 'android-test'
+        project.apply plugin: 'robolectric'
     }
 
     @Test
     public void pluginFailsWithoutAndroidPlugin() {
         Project project = ProjectBuilder.builder().build()
         try {
-            project.apply plugin: 'android-test'
+            project.apply plugin: 'robolectric'
             fail("Failed to throw exception for missing plugin")
         } catch (IllegalStateException e) {
             assertThat(e).hasMessage("The 'android' or 'android-library' plugin is required.");
@@ -40,58 +38,48 @@ class AndroidTestPluginTest {
     public void pluginDetectsAppPlugin() {
         Project project = ProjectBuilder.builder().build()
         project.apply plugin: 'android'
-        project.apply plugin: 'android-test'
+        project.apply plugin: 'robolectric'
     }
 
     @Test
     public void pluginDetectsExtendedAppPlugin() {
         Project project = ProjectBuilder.builder().build()
         project.apply plugin: 'extended-android'
-        project.apply plugin: 'android-test'
+        project.apply plugin: 'robolectric'
     }
 
     @Test
     public void createsATestTaskForTheDebugVariant() {
         Project project = evaluatableProject()
         project.evaluate()
-        def testDebugTask = project.tasks.testDebug
-        assertTrue(testDebugTask instanceof org.gradle.api.tasks.testing.Test)
+
+        assertThat(project.tasks.testDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
     }
 
     @Test
     public void supportsSettingAnExcludePattern_viaTheAndroidTestExtension() {
         Project project = evaluatableProject()
-
-        project.androidTest {
-            exclude "**/lame_tests/**"
-        }
-
+        project.robolectric { exclude "**/lame_tests/**" }
         project.evaluate()
-        def testDebugTask = project.tasks.testDebug
-        assertTrue(testDebugTask.getExcludes().contains("**/lame_tests/**"))
+
+        assertThat(project.tasks.testDebug.getExcludes().contains("**/lame_tests/**")).isTrue()
     }
 
     @Test
     public void createsGenericTestClassesTask() {
         Project project = evaluatableProject()
         project.evaluate()
-        assertNotNull(project.tasks.testClasses)
+
+        assertThat(project.tasks.testClasses).isNotNull()
     }
 
     @Test
     public void dumpsAllTestClassFilesAndResourcesIntoTheSameDirectory() {
         Project project = evaluatableProject()
-        project.android {
-            productFlavors {
-                prod {
-                }
-                beta {
-                }
-            }
-        }
+        project.android { productFlavors { prod {}; beta {} } }
         project.evaluate()
-        def expectedDestination = project.files("$project.buildDir/test-classes").singleFile
 
+        def expectedDestination = project.files("$project.buildDir/test-classes").singleFile
         assertThat(project.tasks.compileTestProdDebugJava.destinationDir).isEqualTo(expectedDestination)
         assertThat(project.tasks.compileTestBetaDebugJava.destinationDir).isEqualTo(expectedDestination)
         assertThat(project.tasks.testProdDebugClasses.destinationDir).isEqualTo(expectedDestination)
@@ -103,72 +91,33 @@ class AndroidTestPluginTest {
     @Test
     public void uniqueTaskCreatedForEachFlavor() {
         Project project = evaluatableProject()
-        project.android {
-            productFlavors {
-                prod {
-                }
-                beta {
-                }
-            }
-        }
+        project.android { productFlavors { prod {}; beta {} } }
         project.evaluate()
 
-        assertNotNull(project.tasks.BetaDebugTestClasses)
-        assertNotNull(project.tasks.ProdDebugTestClasses)
+        assertThat(project.tasks.BetaDebugTestClasses).isNotNull()
+        assertThat(project.tasks.ProdDebugTestClasses).isNotNull()
     }
 
     @Test
     public void uniqueTaskCreatedForEachBuildType() {
         Project project = evaluatableProject()
-        project.android {
-            buildTypes {
-                debug {
-                }
-                trial {
-                }
-            }
-        }
+        project.android { buildTypes { debug {}; trial {} } }
         project.evaluate()
 
-        assertNotNull(project.tasks.DebugTestClasses)
-        assertNotNull(project.tasks.TrialTestClasses)
+        assertThat(project.tasks.DebugTestClasses).isNotNull()
+        assertThat(project.tasks.TrialTestClasses).isNotNull()
     }
 
     @Test
     public void uniqueTaskCreatedForEachFlavorAndBuildType() {
         Project project = evaluatableProject()
-        project.android {
-            productFlavors {
-                prod {
-                }
-                beta {
-                }
-            }
-
-            buildTypes {
-                debug {
-                }
-                trial {
-                }
-            }
-        }
+        project.android { productFlavors { prod {}; beta {} }; buildTypes { debug {}; trial {} } }
         project.evaluate()
 
-        assertNotNull(project.tasks.BetaDebugTestClasses)
-        assertNotNull(project.tasks.BetaTrialTestClasses)
-        assertNotNull(project.tasks.ProdDebugTestClasses)
-        assertNotNull(project.tasks.ProdTrialTestClasses)
-    }
-
-    private Project evaluatableProject() throws Exception {
-        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build();
-        project.apply plugin: 'android'
-        project.apply plugin: 'android-test'
-        project.android {
-            compileSdkVersion 19
-            buildToolsVersion "19.0.3"
-        }
-        return project
+        assertThat(project.tasks.BetaDebugTestClasses).isNotNull()
+        assertThat(project.tasks.BetaTrialTestClasses).isNotNull()
+        assertThat(project.tasks.ProdDebugTestClasses).isNotNull()
+        assertThat(project.tasks.ProdTrialTestClasses).isNotNull()
     }
 
     @Test
@@ -176,6 +125,17 @@ class AndroidTestPluginTest {
         String androidGradleTool = "com.android.tools.build:gradle:0.11.0"
         String configurationName = "androidTestCompile"
         parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
+    }
+
+    private Project evaluatableProject() throws Exception {
+        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build();
+        project.apply plugin: 'android'
+        project.apply plugin: 'robolectric'
+        project.android {
+            compileSdkVersion 19
+            buildToolsVersion "19.0.3"
+        }
+        return project
     }
 
     private void parseTestCompileDependencyWithAndroidGradle(String androidGradleTool, String configurationName) {
@@ -191,8 +151,9 @@ class AndroidTestPluginTest {
         project.repositories {
             mavenCentral()
         }
+
         project.apply plugin: 'android'
-        project.apply plugin: 'android-test'
+        project.apply plugin: 'robolectric'
         project.android {
             compileSdkVersion 19
             buildToolsVersion "19.0.3"
@@ -202,19 +163,16 @@ class AndroidTestPluginTest {
         project.dependencies.add(configurationName, 'junit:junit:4.8')
 
         Set<Task> testTaskSet = project.getTasksByName("test", false)
-        assertEquals(1, testTaskSet.size())
+        assertThat(testTaskSet.size()).isEqualTo(1)
 
         Set<Task> compileTestDebugJavaTaskSet = project.getTasksByName("compileTestDebugJava", false)
-        assertEquals(1, compileTestDebugJavaTaskSet.size())
+        assertThat(compileTestDebugJavaTaskSet.size()).isEqualTo(1)
+
         Task compileDebugJavaTask = compileTestDebugJavaTaskSet.iterator().next()
         String filePathComponent = "junit" + File.separator + "junit" + File.separator + "4.8"
-        boolean found = false
-        for (File file : compileDebugJavaTask.classpath.getFiles()) {
-            if (file.toString().contains(filePathComponent)) {
-                found = true
-                break
-            }
+        boolean found = compileDebugJavaTask.classpath.getFiles().find { f ->
+            f.toString().contains(filePathComponent)
         }
-        assertTrue(found)
+        assertThat(found).isTrue()
     }
 }

@@ -12,7 +12,7 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'nexus'
 
-group = 'org.robolectric.gradle'
+group = 'org.robolectric'
 version = '0.10.0'
 
 dependencies {
@@ -30,26 +30,26 @@ dependencies {
 
 install {
   repositories.mavenInstaller {
-    pom.artifactId = 'gradle-android-test-plugin'
+    pom.artifactId = 'robolectric-gradle-plugin'
   }
 }
 uploadArchives {
   repositories.mavenDeployer {
-    pom.artifactId = 'gradle-android-test-plugin'
+    pom.artifactId = 'robolectric-gradle-plugin'
   }
 }
 
 modifyPom {
   project {
-    name 'Gradle Android Test Plugin'
-    description "A Gradle plugin which enables good 'ol fashioned unit tests for Android builds."
-    url 'https://github.com/robolectric/gradle-android-test-plugin'
+    name 'Robolectric Gradle Plugin'
+    description "A Gradle plugin which enables Robolectric tests for Android builds."
+    url 'https://github.com/robolectric/robolectric-gradle-plugin'
     inceptionYear '2013'
 
     scm {
-      url 'https://github.com/robolectric/gradle-android-test-plugin'
-      connection 'scm:git:git://github.com/robolectric/gradle-android-test-plugin.git'
-      developerConnection 'scm:git:ssh://git@github.com/robolectric/gradle-android-test-plugin.git'
+      url 'https://github.com/robolectric/robolectric-gradle-plugin'
+      connection 'scm:git:git://github.com/robolectric/robolectric-gradle-plugin.git'
+      developerConnection 'scm:git:ssh://git@github.com/robolectric/robolectric-gradle-plugin.git'
     }
 
     licenses {
