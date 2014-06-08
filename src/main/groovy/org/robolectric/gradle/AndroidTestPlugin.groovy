@@ -1,9 +1,7 @@
 package org.robolectric.gradle
 
 import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.BasePlugin
 import com.android.build.gradle.LibraryPlugin
-import com.android.builder.BuilderConstants
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -17,6 +15,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     private static final String TEST_TASK_NAME = 'test'
     private static final String TEST_CLASSES_DIR = "test-classes"
     private static final String TEST_REPORT_DIR = "test-report"
+    private static final String RELEASE_VARIANT = "release"
 
     void apply(Project project) {
         def extension = project.extensions.create('androidTest', RobolectricTestExtension)
@@ -41,7 +40,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         project.tasks.check.dependsOn testTask
 
         config.getVariants().all { variant ->
-            if (variant.buildType.name.equals(BuilderConstants.RELEASE)) {
+            if (variant.buildType.name.equals(RELEASE_VARIANT)) {
                 log.debug("Skipping release build type.")
                 return;
             }
