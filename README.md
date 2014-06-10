@@ -1,42 +1,35 @@
-This is a fork of @JakeWharton's plugin. Updates gradle versions and allows for running junit tests in IDEA.
+# Robolectric Gradle Plugin
 
-Gradle Android Unit Testing Plugin
-==================================
-[![Build Status](https://secure.travis-ci.org/robolectric/gradle-android-test-plugin.png?branch=master)](http://travis-ci.org/robolectric/gradle-android-test-plugin)
+[![Build Status](https://secure.travis-ci.org/robolectric/robolectric-gradle-plugin.png?branch=master)](http://travis-ci.org/robolectric/robolectric-gradle-plugin)
 
-A Gradle plugin which enables good 'ol fashioned unit tests for Android builds.
+A Gradle plugin which enables Robolectric tests.
 
-This plugin is primarily focused on enabling Robolectric tests using gradle. The Android framework is not built with
-unit testing in mind. As such, the canonical framework to facilitate unit testing on the JVM is [Robolectric][robo].
+## Compatibility
 
-Compatibility
---------
-Currently known to work with Gradle 1.10, Android Gradle Plugin 0.9.x, Android Studio 0.5.1, and IntelliJ IDEA 13.
+Currently known to work with Gradle 1.10, Android Gradle Plugin 0.10.x, Android Studio 0.5.8, and IntelliJ IDEA 13.
 
-Getting Started
------
+## Getting Started
 
 If you are starting a new app, or want to try this plugin in the simplest possible environment, the easiest way to start is to use [deckard-gradle](https://github.com/robolectric/deckard-gradle).
 
 deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.google.com/p/android-test-kit/wiki/Espresso) tests in Intellij, Android Studio or the command-line.
 
-Basic Usage for JUnit / Robolectric
------
+## Basic Usage for JUnit / Robolectric
 
 Add the plugin to your `buildscript`'s `dependencies` section:
 ```groovy
-classpath 'org.robolectric.gradle:gradle-android-test-plugin:0.9.+'
+classpath 'org.robolectric:robolectric-gradle-plugin:0.10.+'
 ```
 
-Apply the `android-test` plugin:
+Apply the `robolectric` plugin:
 ```groovy
-apply plugin: 'android-test'
+apply plugin: 'robolectric'
 ```
 
 Add test-only dependencies using the `androidTestCompile` configuration:
 ```groovy
 androidTestCompile 'junit:junit:4.10'
-androidTestCompile 'org.robolectric:robolectric:2.1.+'
+androidTestCompile 'org.robolectric:robolectric:2.3+'
 androidTestCompile 'com.squareup:fest-android:1.0.+'
 ```
 
@@ -45,11 +38,10 @@ the same folder naming conventions (e.g., `src/testPaid/java/`, `src/testDebug/j
 
 Run your tests by calling `gradle clean test`.
 
-Configuration using DSL
------
+## Configuration using DSL
 
 ```groovy
-androidTest {
+robolectric {
     // configure the set of classes for JUnit tests
     include '**/*Test.class'
     exclude '**/espresso/**/*.class'
@@ -59,8 +51,8 @@ androidTest {
 }
 ```
 
-Importing into your IDE (IntelliJ or Android Studio)
----------
+## Importing into your IDE (IntelliJ or Android Studio)
+
 In a nutshell, you should be able to import into these IDEs (and continuously sync when you change your build.gradle). 
 
 It bears repeating, though: if you see the dreaded `Stub!` exception:
@@ -75,8 +67,7 @@ It bears repeating, though: if you see the dreaded `Stub!` exception:
 
 ...you will have to hand-edit your dependencies (in the IDE for IntelliJ, or hand-editing your IML file in Studio). See [deckard-gradle](https://github.com/robolectric/deckard-gradle) for details.
 
-Robolectric 2.2 or earlier
------------
+## Robolectric 2.2 or earlier
 
 Version 2.3 of Robolectric will support this plugin out of the box ([see here](https://github.com/robolectric/robolectric/pull/744)).
 Until then, you can use the following test runner:
@@ -108,9 +99,7 @@ public class RobolectricGradleTestRunner extends RobolectricTestRunner {
 Just annotate your test classes with `@RunWith(RobolectricGradleTestRunner.class)` or subclass this
 test runner if you have other customizations.
 
-
-Plugin Development
-------------------
+## Plugin Development
 
 The `example/` dir contains a project which covers a few configurations for the plugin to work with.
 
@@ -166,15 +155,14 @@ When successful, the artifact will be in a staging repository on oss.sonatype.or
   5. Wait. It will take some time before it appears on Maven Central - usually a few hours but less than a day.
 
 
-Future Directions
-------------------
+## Future Directions
+
 - Change use of 'androidTestCompile' to 'testCompile' - more like standard Java plugin
 - Pull in bits of [SuperJugy's plugin](https://github.com/SuperJugy/android-unit-test), especially the single-test command-line support && better code structure
 - Maybe disappear if we can get the Android Tools team to support JUnit out of the box
 
 
-License
--------
+## License
 
     Copyright 2013 Square, Inc.
               2014 Pivotal Labs
@@ -191,6 +179,3 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
-
-
- [robo]: http://robolectric.org
