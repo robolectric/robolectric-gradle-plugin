@@ -66,6 +66,21 @@ class RobolectricPluginTest {
     }
 
     @Test
+    public void supportsMultipleIncludeAndExcludePatterns() {
+        Project project = evaluatableProject()
+        project.robolectric {
+            exclude "**/lame_tests/**"
+            exclude "**/lame_tests2/**"
+            include "**/robo_tests/**"
+            include "**/robo_tests2/**"
+        }
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug.excludes).contains("**/lame_tests/**").contains("**/lame_tests2/**")
+        assertThat(project.tasks.testDebug.includes).contains("**/robo_tests/**").contains("**/robo_tests2/**")
+    }
+
+    @Test
     public void createsGenericTestClassesTask() {
         Project project = evaluatableProject()
         project.evaluate()
