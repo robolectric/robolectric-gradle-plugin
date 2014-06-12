@@ -18,7 +18,7 @@ deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.go
 
 Add the plugin to your `buildscript`'s `dependencies` section:
 ```groovy
-classpath 'org.robolectric:robolectric-gradle-plugin:0.10.+'
+classpath 'org.robolectric:robolectric-gradle-plugin:0.11.+'
 ```
 
 Apply the `robolectric` plugin:
