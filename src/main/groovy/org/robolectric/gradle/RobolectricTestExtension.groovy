@@ -2,8 +2,8 @@ package org.robolectric.gradle
 
 class RobolectricTestExtension {
     private String maxHeapSize
-    private String includePattern
-    private String excludePattern
+    private final List<String> includePatterns = new LinkedList<>()
+    private final List<String> excludePatterns = new LinkedList<>()
 
     String getMaxHeapSize() {
         return maxHeapSize
@@ -13,19 +13,19 @@ class RobolectricTestExtension {
         this.maxHeapSize = maxHeapSize
     }
 
-    String getIncludePattern() {
-        return this.includePattern
+    List<String> getIncludePatterns() {
+        return this.includePatterns
     }
 
     void include(String includePattern) {
-        this.includePattern = includePattern
+        this.includePatterns.add includePattern
     }
 
-    String getExcludePattern() {
-        return this.excludePattern
+    List<String> getExcludePatterns() {
+        return this.excludePatterns
     }
 
     void exclude(String excludePattern) {
-        this.excludePattern = excludePattern
+        this.excludePatterns.add excludePattern
     }
 }
