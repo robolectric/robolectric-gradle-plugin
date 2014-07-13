@@ -157,6 +157,10 @@ class RobolectricPlugin implements Plugin<Project> {
             // Work around http://issues.gradle.org/browse/GRADLE-1682
             testRunTask.scanForTestClasses = false
 
+            // Set the applicationId as packageName to avoid unknown resources when applicationIdSuffix is used
+            def packageName = project.android.defaultConfig.applicationId
+            testRunTask.systemProperties.put('android.package', packageName)
+
             // Add the path to the correct manifest, resources, assets as a system property.
             testRunTask.systemProperties.put('android.manifest', processedManifestPath)
             testRunTask.systemProperties.put('android.resources', processedResourcesPath)
