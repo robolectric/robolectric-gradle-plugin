@@ -29,7 +29,7 @@ apply plugin: 'robolectric'
 Add test-only dependencies using the `androidTestCompile` configuration:
 ```groovy
 androidTestCompile 'junit:junit:4.10'
-androidTestCompile 'org.robolectric:robolectric:2.3+'
+androidTestCompile 'org.robolectric:robolectric:2.3.+'
 androidTestCompile 'com.squareup:fest-android:1.0.+'
 ```
 
@@ -47,7 +47,10 @@ robolectric {
     exclude '**/espresso/**/*.class'
 
     // configure max heap size of the test JVM
-    maxHeapSize = "2048m"
+    maxHeapSize = '2048m'
+
+    // configure whether failing tests should fail the build
+    ignoreFailures true
 }
 ```
 

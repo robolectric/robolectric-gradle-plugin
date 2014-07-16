@@ -169,6 +169,7 @@ class RobolectricPlugin implements Plugin<Project> {
             if (!extension.excludePatterns.empty) {
                 testRunTask.exclude(extension.excludePatterns)
             }
+            testRunTask.ignoreFailures = extension.ignoreFailures
 
             testTask.reportOn testRunTask
         }
