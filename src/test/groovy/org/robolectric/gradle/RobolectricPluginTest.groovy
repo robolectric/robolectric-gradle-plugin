@@ -106,8 +106,6 @@ class RobolectricPluginTest {
         def expectedDestination = project.files("$project.buildDir/test-classes").singleFile
         assertThat(project.tasks.compileTestProdDebugJava.destinationDir).isEqualTo(expectedDestination)
         assertThat(project.tasks.compileTestBetaDebugJava.destinationDir).isEqualTo(expectedDestination)
-        assertThat(project.tasks.testProdDebugClasses.destinationDir).isEqualTo(expectedDestination)
-        assertThat(project.tasks.testBetaDebugClasses.destinationDir).isEqualTo(expectedDestination)
         assertThat(project.tasks.processTestProdDebugResources.destinationDir).isEqualTo(expectedDestination)
         assertThat(project.tasks.processTestBetaDebugResources.destinationDir).isEqualTo(expectedDestination)
     }
