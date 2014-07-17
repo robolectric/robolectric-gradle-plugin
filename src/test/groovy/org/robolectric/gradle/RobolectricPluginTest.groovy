@@ -81,6 +81,15 @@ class RobolectricPluginTest {
     }
 
     @Test
+    public void supportsIngoreFailures() {
+        Project project = evaluatableProject()
+        project.robolectric { ignoreFailures true }
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug.ignoreFailures).isTrue()
+    }
+
+    @Test
     public void createsGenericTestClassesTask() {
         Project project = evaluatableProject()
         project.evaluate()
@@ -136,8 +145,8 @@ class RobolectricPluginTest {
     }
 
     @Test
-    public void parseInstrumentTestCompile_androidGradle_0_11_0() {
-        String androidGradleTool = "com.android.tools.build:gradle:0.11.0"
+    public void parseInstrumentTestCompile_androidGradle_0_12_0() {
+        String androidGradleTool = "com.android.tools.build:gradle:0.12.0"
         String configurationName = "androidTestCompile"
         parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
     }
@@ -147,8 +156,8 @@ class RobolectricPluginTest {
         project.apply plugin: 'android'
         project.apply plugin: 'robolectric'
         project.android {
-            compileSdkVersion 19
-            buildToolsVersion "19.0.3"
+            compileSdkVersion 20
+            buildToolsVersion '20.0.0'
         }
         return project
     }
@@ -170,8 +179,8 @@ class RobolectricPluginTest {
         project.apply plugin: 'android'
         project.apply plugin: 'robolectric'
         project.android {
-            compileSdkVersion 19
-            buildToolsVersion "19.0.3"
+            compileSdkVersion 20
+            buildToolsVersion '20.0.0'
         }
 
         project.evaluate()
