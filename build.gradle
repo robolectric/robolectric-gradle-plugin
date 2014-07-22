@@ -1,11 +1,11 @@
 buildscript {
-  repositories {
-    mavenCentral()
-  }
+    repositories {
+        mavenCentral()
+    }
 
-  dependencies {
-    classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.3'
-  }
+    dependencies {
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.3'
+    }
 }
 
 apply plugin: 'groovy'
@@ -16,73 +16,74 @@ group = 'org.robolectric'
 version = '0.12.0'
 
 dependencies {
-  repositories {
-    mavenCentral()
-  }
+    repositories {
+        mavenCentral()
+    }
 
-  compile gradleApi()
-  compile 'org.codehaus.groovy:groovy-all:2.2.+'
-  compile 'com.android.tools.build:gradle:0.12.0'
+    compile gradleApi()
+    compile 'org.codehaus.groovy:groovy-all:2.2.+'
+    compile 'com.android.tools.build:gradle:0.12.0'
 
-  testCompile 'junit:junit:4.10'
-  testCompile 'org.easytesting:fest-assert-core:2.0M10'
+    testCompile 'junit:junit:4.10'
+    testCompile 'org.easytesting:fest-assert-core:2.0M10'
 }
 
 install {
-  repositories.mavenInstaller {
-    pom.artifactId = 'robolectric-gradle-plugin'
-  }
+    repositories.mavenInstaller {
+        pom.artifactId = 'robolectric-gradle-plugin'
+    }
 }
+
 uploadArchives {
-  repositories.mavenDeployer {
-    pom.artifactId = 'robolectric-gradle-plugin'
-  }
+    repositories.mavenDeployer {
+        pom.artifactId = 'robolectric-gradle-plugin'
+    }
 }
 
 modifyPom {
-  project {
-    name 'Robolectric Gradle Plugin'
-    description "A Gradle plugin which enables Robolectric tests for Android builds."
-    url 'https://github.com/robolectric/robolectric-gradle-plugin'
-    inceptionYear '2013'
+    project {
+        name 'Robolectric Gradle Plugin'
+        description "A Gradle plugin which enables Robolectric tests for Android."
+        url 'https://github.com/robolectric/robolectric-gradle-plugin'
+        inceptionYear '2013'
 
-    scm {
-      url 'https://github.com/robolectric/robolectric-gradle-plugin'
-      connection 'scm:git:git://github.com/robolectric/robolectric-gradle-plugin.git'
-      developerConnection 'scm:git:ssh://git@github.com/robolectric/robolectric-gradle-plugin.git'
+        scm {
+            url 'https://github.com/robolectric/robolectric-gradle-plugin'
+            connection 'scm:git:git://github.com/robolectric/robolectric-gradle-plugin.git'
+            developerConnection 'scm:git:ssh://git@github.com/robolectric/robolectric-gradle-plugin.git'
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+
+        organization {
+            name 'Robolectric'
+            url 'http://robolectric.org'
+        }
+
+        developers {
+            developer {
+                id 'mike'
+                name 'Mike Grafton'
+                email 'mike@pivotallabs.com'
+            }
+
+            developer {
+                id 'erich'
+                name 'Erich Douglass'
+                email 'erich@pivotallabs.com'
+            }
+
+            developer {
+                id 'terry'
+                name 'Terry Chen'
+                email 'terry@pivotallabs.com'
+            }
+        }
     }
-
-    licenses {
-      license {
-        name 'The Apache Software License, Version 2.0'
-        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-        distribution 'repo'
-      }
-    }
-
-    developers {
-      developer {
-        id 'squaregithub'
-        name 'Square Open Source Development'
-        email 'jobs@squareup.com'
-      }
-
-      developer {
-        id 'mike'
-        name 'Mike Grafton'
-        email 'mike@pivotallabs.com'
-      }
-
-      developer {
-        id 'terry'
-        name 'Terry Chen'
-        email 'terry@pivotallabs.com'
-      }
-    }
-
-    organization {
-      name 'Square, Inc.'
-      url 'http://squareup.com'
-    }
-  }
 }
