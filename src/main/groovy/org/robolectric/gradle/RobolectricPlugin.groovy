@@ -13,9 +13,9 @@ import org.gradle.api.tasks.testing.TestReport
 class RobolectricPlugin implements Plugin<Project> {
     private static final String[] TEST_DIRS = ['test', 'androidTest']
     private static final String TEST_TASK_NAME = 'test'
-    private static final String TEST_CLASSES_DIR = "test-classes"
-    private static final String TEST_REPORT_DIR = "test-report"
-    private static final String RELEASE_VARIANT = "release"
+    private static final String TEST_CLASSES_DIR = 'test-classes'
+    private static final String TEST_REPORT_DIR = 'test-report'
+    private static final String RELEASE_VARIANT = 'release'
 
     void apply(Project project) {
         def extension = project.extensions.create('robolectric', RobolectricTestExtension)
@@ -125,12 +125,6 @@ class RobolectricPlugin implements Plugin<Project> {
             def testClassesTaskPerVariation = project.tasks.getByName variationSources.classesTaskName
             testClassesTaskPerVariation.group = null
             testClassesTaskPerVariation.description = null
-
-            def testClassesTaskPerFlavor = project.tasks.create("$projectFlavorName$buildTypeName" + 'TestClasses')
-            testClassesTaskPerFlavor.dependsOn testClassesTaskPerVariation
-
-            def testClassesTask = project.tasks.maybeCreate('testClasses')
-            testClassesTask.dependsOn testClassesTaskPerVariation
 
             // don't leave test resources behind
             def processResourcesTask = project.tasks.getByName variationSources.processResourcesTaskName
