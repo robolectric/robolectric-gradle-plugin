@@ -90,14 +90,6 @@ class RobolectricPluginTest {
     }
 
     @Test
-    public void createsGenericTestClassesTask() {
-        Project project = evaluatableProject()
-        project.evaluate()
-
-        assertThat(project.tasks.testClasses).isNotNull()
-    }
-
-    @Test
     public void dumpsAllTestClassFilesAndResourcesIntoTheSameDirectory() {
         Project project = evaluatableProject()
         project.android { productFlavors { prod {}; beta {} } }
@@ -108,38 +100,6 @@ class RobolectricPluginTest {
         assertThat(project.tasks.compileTestBetaDebugJava.destinationDir).isEqualTo(expectedDestination)
         assertThat(project.tasks.processTestProdDebugResources.destinationDir).isEqualTo(expectedDestination)
         assertThat(project.tasks.processTestBetaDebugResources.destinationDir).isEqualTo(expectedDestination)
-    }
-
-    @Test
-    public void uniqueTaskCreatedForEachFlavor() {
-        Project project = evaluatableProject()
-        project.android { productFlavors { prod {}; beta {} } }
-        project.evaluate()
-
-        assertThat(project.tasks.BetaDebugTestClasses).isNotNull()
-        assertThat(project.tasks.ProdDebugTestClasses).isNotNull()
-    }
-
-    @Test
-    public void uniqueTaskCreatedForEachBuildType() {
-        Project project = evaluatableProject()
-        project.android { buildTypes { debug {}; trial {} } }
-        project.evaluate()
-
-        assertThat(project.tasks.DebugTestClasses).isNotNull()
-        assertThat(project.tasks.TrialTestClasses).isNotNull()
-    }
-
-    @Test
-    public void uniqueTaskCreatedForEachFlavorAndBuildType() {
-        Project project = evaluatableProject()
-        project.android { productFlavors { prod {}; beta {} }; buildTypes { debug {}; trial {} } }
-        project.evaluate()
-
-        assertThat(project.tasks.BetaDebugTestClasses).isNotNull()
-        assertThat(project.tasks.BetaTrialTestClasses).isNotNull()
-        assertThat(project.tasks.ProdDebugTestClasses).isNotNull()
-        assertThat(project.tasks.ProdTrialTestClasses).isNotNull()
     }
 
     @Test
