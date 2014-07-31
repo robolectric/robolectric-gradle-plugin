@@ -70,6 +70,68 @@ It bears repeating, though: if you see the dreaded `Stub!` exception:
 
 ...you will have to hand-edit your dependencies (in the IDE for IntelliJ, or hand-editing your IML file in Studio). See [deckard-gradle](https://github.com/robolectric/deckard-gradle) for details.
 
+```xml
+ <!-- It was to hand-edit $project.iml sample-->
+  <module ...>
+    <component ...>
+      ....
+    </component>
+    <component name="NewModuleRootManager" inherit-compiler-output="false">  
+      <!-- You must add this!!!!-->
+      <output-test url="file://$MODULE_DIR$/build/test-classes" />
+      
+      <orderEntry .../>
+      <orderEntry .../>
+      <orderEntry .../>
+      <orderEntry .../>
+      <orderEntry .../>
+      <!-- It is may first order, but move to last order -->
+      <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
+    </component>
+    
+  </module>
+```
+
+or
+
+task is to automate for modifying IML file
+```groovy
+
+task initGradleTest << {
+
+    def imlFile = project.name + '.iml'
+
+    def parse = new XmlParser().parse(imlFile)
+
+    def modulePath = parse.@'external.linked.project.path'
+
+    // It's Robolectric Default ouputPath
+    def outputTestPath = "file://$modulePath/build/test-classes"
+    def moduleComponent = parse.component.find { it.@name == 'NewModuleRootManager' }
+    def outputTest = moduleComponent.find {it.name() == 'output-test'}
+
+    if (outputTest != null) {
+        outputTest.@url = outputTestPath
+    } else {
+        moduleComponent.appendNode('output-test', [url : outputTestPath])
+    }
+
+    // jdk orderEntry must be last
+    def orderEntry = moduleComponent.orderEntry
+    def jdkOrderEntry = orderEntry.find { it.@type == 'jdk' }
+    moduleComponent.remove(jdkOrderEntry)
+    moduleComponent.append(jdkOrderEntry)
+
+    // rewrite $project.iml file
+    FileWriter fileWriter = new FileWriter(imlFile)
+    new XmlNodePrinter(new PrintWriter(fileWriter)).print(parse)
+
+
+}
+
+tasks.preBuild.dependsOn initGradleTest
+```
+
 ## Robolectric 2.2 or earlier
 
 Version 2.3 of Robolectric will support this plugin out of the box ([see here](https://github.com/robolectric/robolectric/pull/744)).
