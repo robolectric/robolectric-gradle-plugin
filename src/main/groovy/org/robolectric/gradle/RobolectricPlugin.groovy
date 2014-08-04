@@ -82,6 +82,8 @@ class RobolectricPlugin implements Plugin<Project> {
             variationSources.java.setSrcDirs config.getSourceDirs("java", projectFlavorNames)
             variationSources.resources.setSrcDirs config.getSourceDirs("res", projectFlavorNames)
 
+            log.warn("!!!!!!!!!!!!!!!:" + project.android.sourceSets);
+
             log.debug("----------------------------------------")
             log.debug("build type name: $buildTypeName")
             log.debug("project flavor name: $projectFlavorName")
@@ -187,13 +189,15 @@ class RobolectricPlugin implements Plugin<Project> {
             if (hasLibPlugin) return project.plugins.find { p -> p instanceof LibraryPlugin }
         }
 
-        def getSourceDirs(String sourceType, List<String> projectFlavorNames){
+        def getSourceDirs(String sourceType, List<String> projectFlavorNames) {
             def dirs = []
             project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
-                dirs.add(project.file(testDir))
+                dirs.add(testDir)
             }
             projectFlavorNames.each { flavor ->
-                dirs.add(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
+                if (flavor) {
+                    dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
+                }
             }
             return dirs;
         }
