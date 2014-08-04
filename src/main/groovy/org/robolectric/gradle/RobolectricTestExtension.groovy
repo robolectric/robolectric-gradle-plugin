@@ -5,17 +5,17 @@ class RobolectricTestExtension {
     private final List<String> includePatterns = new LinkedList<>()
     private final List<String> excludePatterns = new LinkedList<>()
     private boolean ignoreFailures
-    private def afterTest
+    private Closure afterTest
 
     String getMaxHeapSize() {
         return maxHeapSize
     }
 
-    void setAfterTest(def afterTest) {
+    void setAfterTest(Closure afterTest) {
       this.afterTest = afterTest
     }
 
-    def getAfterTest() {
+    Closure getAfterTest() {
       return this.afterTest
     }
 
