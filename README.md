@@ -6,19 +6,19 @@ A Gradle plugin which enables Robolectric tests.
 
 ## Compatibility
 
-Currently compatible with version 0.11.x of the android gradle plugin.
+Currently compatible with version 0.12.x of the android gradle plugin.
 
 ## Getting Started
 
 If you are starting a new app, or want to try this plugin in the simplest possible environment, the easiest way to start is to use [deckard-gradle](https://github.com/robolectric/deckard-gradle).
 
-deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.google.com/p/android-test-kit/wiki/Espresso) tests in Intellij, Android Studio or the command-line.
+deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.google.com/p/android-test-kit/wiki/Espresso) tests in IntelliJ, Android Studio or the command-line.
 
 ## Basic Usage for JUnit / Robolectric
 
 Add the plugin to your `buildscript`'s `dependencies` section:
 ```groovy
-classpath 'org.robolectric:robolectric-gradle-plugin:0.11.+'
+classpath 'org.robolectric:robolectric-gradle-plugin:0.12.+'
 ```
 
 Apply the `robolectric` plugin:
@@ -28,7 +28,7 @@ apply plugin: 'robolectric'
 
 Add test-only dependencies using the `androidTestCompile` configuration:
 ```groovy
-androidTestCompile 'org.robolectric:robolectric:2.3.+'
+androidTestCompile 'org.robolectric:robolectric:2.3'
 ```
 
 Place your tests in `src/test/java` or `src/androidTest/java` You can also add per-build type and per-flavor tests by using the same folder naming conventions (e.g., `src/testPaid/java`, `src/testDebug/java`).
