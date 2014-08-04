@@ -73,6 +73,19 @@ class RobolectricPluginTest {
     }
 
     @Test
+    public void supportsAfterTestListenerForTheTestTask() {
+        Project project = evaluatableProject()
+        project.robolectric {
+            afterTest { descriptor, result ->
+                println "Executed ${descriptor.name} with result: ${result.resultType}"
+            }
+        }
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
+    }
+
+    @Test
     public void supportsSettingAnExcludePattern_viaTheAndroidTestExtension() {
         Project project = evaluatableProject()
         project.robolectric { exclude "**/lame_tests/**" }

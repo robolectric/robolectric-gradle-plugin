@@ -149,6 +149,11 @@ class RobolectricPlugin implements Plugin<Project> {
             testRunTask.systemProperties.put('android.assets', processedAssetsPath)
             testRunTask.setMaxHeapSize(extension.maxHeapSize)
 
+            // Set afterTest closure
+            if (extension.afterTest != null) {
+                testRunTask.afterTest(extension.afterTest)
+            }
+
             List<String> includePatterns = !extension.includePatterns.empty ? extension.includePatterns : ['**/*Test.class']
             testRunTask.include(includePatterns)
             if (!extension.excludePatterns.empty) {
