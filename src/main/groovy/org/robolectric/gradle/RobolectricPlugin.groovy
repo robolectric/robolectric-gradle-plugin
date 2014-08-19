@@ -11,7 +11,6 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
 
 class RobolectricPlugin implements Plugin<Project> {
-    private static final String[] TEST_DIRS = ['test', 'androidTest']
     private static final String TEST_TASK_NAME = 'test'
     private static final String TEST_CLASSES_DIR = 'test-classes'
     private static final String TEST_REPORT_DIR = 'test-report'
@@ -76,26 +75,12 @@ class RobolectricPlugin implements Plugin<Project> {
                     javaCompile.classpath)
             testCompileClasspath.add robolectricTestConfig
 
-            def testSrcDirs = []
             SourceSet variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
             def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR")
             def testRunClasspath = testCompileClasspath.plus testDestinationDir
 
-            TEST_DIRS.each { testDir ->
-                testSrcDirs.add(project.file("src/$testDir/java"))
-                testSrcDirs.add(project.file("src/$testDir$buildTypeName/java"))
-                testSrcDirs.add(project.file("src/$testDir$projectFlavorName/java"))
-                projectFlavorNames.each { flavor ->
-                    testSrcDirs.add project.file("src/$testDir$flavor/java")
-                }
-                variationSources.resources.srcDirs project.file("src/$testDir/resources")
-
-                // Add the output of the test file compilation to the existing test classpath to create
-                // the runtime classpath for test execution.
-                testRunClasspath.add project.files("$project.buildDir/resources/$testDir$variationName")
-            };
-
-            variationSources.java.setSrcDirs testSrcDirs
+            variationSources.java.setSrcDirs config.getSourceDirs("java", projectFlavorNames)
+            variationSources.resources.setSrcDirs config.getSourceDirs("res", projectFlavorNames)
 
             log.debug("----------------------------------------")
             log.debug("build type name: $buildTypeName")
@@ -205,6 +190,19 @@ class RobolectricPlugin implements Plugin<Project> {
         def getPlugin() {
             if (hasAppPlugin) return project.plugins.find { p -> p instanceof AppPlugin }
             if (hasLibPlugin) return project.plugins.find { p -> p instanceof LibraryPlugin }
+        }
+
+        def getSourceDirs(String sourceType, List<String> projectFlavorNames) {
+            def dirs = []
+            project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
+                dirs.add(testDir)
+            }
+            projectFlavorNames.each { flavor ->
+                if (flavor) {
+                    dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
+                }
+            }
+            return dirs;
         }
 
         boolean hasAppPlugin() {

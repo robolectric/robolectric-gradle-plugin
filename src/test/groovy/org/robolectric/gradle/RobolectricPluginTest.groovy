@@ -1,7 +1,6 @@
 package org.robolectric.gradle
 
 import org.junit.Test
-import org.junit.Ignore
 import org.gradle.api.Task
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -54,6 +53,23 @@ class RobolectricPluginTest {
         project.evaluate()
 
         assertThat(project.tasks.testDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
+    }
+
+    @Test
+    public void createsATaskCompilingFilesInDefaultLocation() {
+        Project project = evaluatableProject()
+        project.evaluate()
+
+        assertThat(project.tasks.compileTestDebugJava.source.files).containsOnly(project.file("src/androidTest/java/SomeTest.java"))
+    }
+
+    @Test
+    public void createsATaskCompilingFilesInCustomLocation() {
+        Project project = evaluatableProject()
+        project.android.sourceSets.androidTest.java.srcDirs = ['customTestFolder/src']
+        project.evaluate()
+
+        assertThat(project.tasks.compileTestDebugJava.source.files).containsOnly(project.file("customTestFolder/src/SomeTest.java"))
     }
 
     @Test
