@@ -148,6 +148,7 @@ class RobolectricPlugin implements Plugin<Project> {
             testRunTask.systemProperties.put('android.resources', processedResourcesPath)
             testRunTask.systemProperties.put('android.assets', processedAssetsPath)
             testRunTask.setMaxHeapSize(extension.maxHeapSize)
+            testRunTask.jvmArgs(extension.jvmArgs)
 
             // Set afterTest closure
             if (extension.afterTest != null) {
