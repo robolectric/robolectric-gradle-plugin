@@ -95,6 +95,16 @@ class RobolectricPluginTest {
     }
 
     @Test
+    public void supportsAddingJvmArgs_viaTheAndroidTestExtension() {
+        Project project = evaluatableProject()
+        project.robolectric { jvmArgs "-XX:TestArgument0", "-XX:TestArgument1" }
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug.getJvmArgs()).contains("-XX:TestArgument0")
+        assertThat(project.tasks.testDebug.getJvmArgs()).contains("-XX:TestArgument1")
+    }
+
+    @Test
     public void supportsMultipleIncludeAndExcludePatterns() {
         Project project = evaluatableProject()
         project.robolectric {
