@@ -36,16 +36,16 @@ class RobolectricTestExtension {
         return this.includePatterns
     }
 
-    void include(String includePattern) {
-        this.includePatterns.add includePattern
+    void include(String... includePattern) {
+        this.includePatterns.addAll includePattern
     }
 
     List<String> getExcludePatterns() {
         return this.excludePatterns
     }
 
-    void exclude(String excludePattern) {
-        this.excludePatterns.add excludePattern
+    void exclude(String... excludePattern) {
+        this.excludePatterns.addAll excludePattern
     }
 
     boolean getIgnoreFailures() {
