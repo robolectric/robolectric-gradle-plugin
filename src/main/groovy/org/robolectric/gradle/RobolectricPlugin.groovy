@@ -1,7 +1,5 @@
 package org.robolectric.gradle
 
-import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -9,6 +7,8 @@ import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryPlugin
 
 class RobolectricPlugin implements Plugin<Project> {
     private static final String TEST_TASK_NAME = 'test'
@@ -177,9 +177,9 @@ class RobolectricPlugin implements Plugin<Project> {
             this.hasLibPlugin = project.plugins.find { p -> p instanceof LibraryPlugin }
 
             if (!hasAppPlugin && !hasLibPlugin) {
-                throw new IllegalStateException("The 'android' or 'android-library' plugin is required.")
+                throw new IllegalStateException("The 'com.android.application' or 'com.android.library' plugin is required.")
             } else if (hasAppPlugin && hasLibPlugin) {
-                throw new IllegalStateException("Having both 'android' and 'android-library' plugin is not supported.")
+                throw new IllegalStateException("Having both 'com.android.application' and 'com.android.library' plugin is not supported.")
             }
         }
 
