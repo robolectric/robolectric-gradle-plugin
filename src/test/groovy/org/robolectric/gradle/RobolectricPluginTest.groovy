@@ -53,6 +53,24 @@ class RobolectricPluginTest {
     }
 
     @Test
+    public void createsATestTaskForTheProdDebugLibVariant() {
+        Project project = evaluatableLibraryProject()
+        project.android { productFlavors { prod {}; beta {} } }
+        project.evaluate()
+
+        assertThat(project.tasks.testProdDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
+    }
+
+    @Test
+    public void createsATestTaskForTheProdDebugAppVariant() {
+        Project project = evaluatableProject()
+        project.android { productFlavors { prod {}; beta {} } }
+        project.evaluate()
+
+        assertThat(project.tasks.testProdDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
+    }
+
+    @Test
     public void createsATaskCompilingFilesInDefaultLocation() {
         Project project = evaluatableProject()
         project.evaluate()
@@ -148,6 +166,17 @@ class RobolectricPluginTest {
     private Project evaluatableProject() throws Exception {
         Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build();
         project.apply plugin: 'com.android.application'
+        project.apply plugin: 'robolectric'
+        project.android {
+            compileSdkVersion 20
+            buildToolsVersion '20.0.0'
+        }
+        return project
+    }
+
+    private Project evaluatableLibraryProject() throws Exception {
+        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build();
+        project.apply plugin: 'com.android.library'
         project.apply plugin: 'robolectric'
         project.android {
             compileSdkVersion 20
