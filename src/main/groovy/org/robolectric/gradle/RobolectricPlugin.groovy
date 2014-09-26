@@ -46,15 +46,13 @@ class RobolectricPlugin implements Plugin<Project> {
 
             // Get the build type name (e.g., "Debug", "Release").
             def buildTypeName = variant.buildType.name.capitalize()
-            def projectFlavorNames = [""]
-            if (config.hasAppPlugin()) {
-                // Flavors are only available for the app plugin (e.g., "Free", "Paid").
-                projectFlavorNames = variant.productFlavors.collect { it.name.capitalize() }
-                // TODO support flavor groups... ugh
-                if (projectFlavorNames.isEmpty()) {
-                    projectFlavorNames = [""]
-                }
+
+            def projectFlavorNames = variant.productFlavors.collect { it.name.capitalize() }
+            // TODO support flavor groups... ugh
+            if (projectFlavorNames.isEmpty()) {
+                projectFlavorNames = [""]
             }
+
             def projectFlavorName = projectFlavorNames.join()
 
             // The combination of flavor and type yield a unique "variation". This value is used for
