@@ -2,7 +2,7 @@ package org.robolectric.gradle
 
 class RobolectricTestExtension {
     private String maxHeapSize
-    private List<?> jvmArgs = new LinkedList<>()
+    private final List<String> jvmArgs = new LinkedList<>()
     private final List<String> includePatterns = new LinkedList<>()
     private final List<String> excludePatterns = new LinkedList<>()
     private boolean ignoreFailures
@@ -28,7 +28,7 @@ class RobolectricTestExtension {
         jvmArgs.addAll arguments
     }
 
-    List<?> getJvmArgs() {
+    List<String> getJvmArgs() {
         return jvmArgs
     }
 
