@@ -46,6 +46,9 @@ robolectric {
     // configure max heap size of the test JVM
     maxHeapSize = '2048m'
 
+    // configure the test JVM arguments
+    jvmArgs '-XX:MaxPermSize=512m', '-XX:-UseSplitVerifier'
+
     // configure whether failing tests should fail the build
     ignoreFailures true
 
