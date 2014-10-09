@@ -15,6 +15,9 @@ apply plugin: 'nexus'
 group = 'org.robolectric'
 version = '0.13.1'
 
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
 dependencies {
     repositories {
         mavenCentral()
