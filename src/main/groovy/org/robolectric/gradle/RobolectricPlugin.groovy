@@ -59,7 +59,7 @@ class RobolectricPlugin implements Plugin<Project> {
             // looking up existing associated tasks as well as naming the task we are about to create.
             def variationName = "$projectFlavorName$buildTypeName"
             // Grab the task which outputs the merged manifest, resources, and assets for this flavor.
-            def processedManifestPath = variant.processManifest.manifestOutputFile
+            def processedManifestPath = variant.outputs[0].processManifest.manifestOutputFile
             def processedResourcesPath = variant.mergeResources.outputDir
             def processedAssetsPath = variant.mergeAssets.outputDir
 
