@@ -13,7 +13,7 @@ apply plugin: 'maven'
 apply plugin: 'nexus'
 
 group = 'org.robolectric'
-version = '0.13.1'
+version = '0.13.2'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
