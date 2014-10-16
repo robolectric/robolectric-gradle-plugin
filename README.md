@@ -48,6 +48,13 @@ robolectric {
 
     // configure the test JVM arguments
     jvmArgs '-XX:MaxPermSize=512m', '-XX:-UseSplitVerifier'
+    
+    // Specify max number of processes (default is 1)
+    maxParallelForks = 4
+    
+    // Specify max number of test classes to execute in a test process
+    // before restarting the process (default is unlimited)
+    forkEvery = 150
 
     // configure whether failing tests should fail the build
     ignoreFailures true

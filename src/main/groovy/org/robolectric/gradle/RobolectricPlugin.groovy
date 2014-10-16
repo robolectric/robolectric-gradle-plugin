@@ -145,6 +145,10 @@ class RobolectricPlugin implements Plugin<Project> {
             testRunTask.systemProperties.put('android.manifest', processedManifestPath)
             testRunTask.systemProperties.put('android.resources', processedResourcesPath)
             testRunTask.systemProperties.put('android.assets', processedAssetsPath)
+
+            // Set extension properties
+            testRunTask.setMaxParallelForks(extension.maxParallelForks)
+            testRunTask.setForkEvery(extension.forkEvery)
             testRunTask.setMaxHeapSize(extension.maxHeapSize)
             testRunTask.jvmArgs(extension.jvmArgs)
 
