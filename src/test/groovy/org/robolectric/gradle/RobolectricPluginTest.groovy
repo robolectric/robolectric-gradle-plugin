@@ -1,14 +1,19 @@
 package org.robolectric.gradle
 
+import org.junit.Rule
 import org.junit.Test
 import org.junit.Ignore
 import org.gradle.api.Task
 import org.gradle.api.Project
 import org.gradle.api.internal.plugins.PluginApplicationException
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.rules.ExpectedException
+
 import static org.fest.assertions.api.Assertions.*
 
 class RobolectricPluginTest {
+    @Rule
+    public ExpectedException thrown = ExpectedException.none()
 
     @Test
     public void pluginDetectsLibraryPlugin() {
@@ -117,6 +122,76 @@ class RobolectricPluginTest {
 
         assertThat(project.tasks.testDebug.getJvmArgs()).contains("-XX:TestArgument0")
         assertThat(project.tasks.testDebug.getJvmArgs()).contains("-XX:TestArgument1")
+    }
+
+    @Test
+    public void supportsAddingMaxHeapSize_viaTheAndroidTestExtension() {
+        Project project = evaluatableProject()
+        project.robolectric { maxHeapSize = "1024m" }
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug.getMaxHeapSize()).isEqualTo("1024m")
+    }
+
+    @Test
+    public void supportsAddingMaxParallelForks_viaTheAndroidTestExtension() {
+        Project project = evaluatableProject()
+        project.robolectric { maxParallelForks = 4 }
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug.getMaxParallelForks()).isEqualTo(4)
+    }
+
+    @Test
+    public void setMaxParallelForksToOne_whenNotConfigured_viaTheAndroidTestExtension() {
+        Project project = evaluatableProject()
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug.getMaxParallelForks()).isEqualTo(1)
+    }
+
+    @Test
+    public void shouldThrowException_whenMaxParallelForks_lessThanOne_viaTheAndroidTestExtension() {
+        Project project = evaluatableProject()
+
+        thrown.expect(IllegalArgumentException.class)
+        thrown.expectMessage("Cannot set maxParallelForks to a value less than 1.")
+        project.robolectric { maxParallelForks = 0 }
+    }
+
+    @Test
+    public void supportsAddingForkEvery_viaTheAndroidTestExtension() {
+        Project project = evaluatableProject()
+        project.robolectric { forkEvery = 150 }
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug.getForkEvery()).isEqualTo(150)
+    }
+
+    @Test
+    public void setForkEveryToZero_whenNotConfigured_viaTheAndroidTestExtension() {
+        Project project = evaluatableProject()
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug.getForkEvery()).isEqualTo(0)
+    }
+
+    @Test
+    public void setForkEveryToZero_whenConfiguredNull_viaTheAndroidTestExtension() {
+        Project project = evaluatableProject()
+        project.robolectric { forkEvery = null }
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug.getForkEvery()).isEqualTo(0)
+    }
+
+    @Test
+    public void shouldThrowException_whenForkEveryNegative_viaTheAndroidTestExtension() {
+        Project project = evaluatableProject()
+
+        thrown.expect(IllegalArgumentException.class)
+        thrown.expectMessage("Cannot set forkEvery to a value less than 0.")
+        project.robolectric { forkEvery = -1 }
     }
 
     @Test
