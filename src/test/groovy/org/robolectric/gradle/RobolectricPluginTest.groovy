@@ -157,8 +157,8 @@ class RobolectricPluginTest {
     }
 
     @Test @Ignore
-    public void parseInstrumentTestCompile_androidGradle_0_13_0() {
-        String androidGradleTool = "com.android.tools.build:gradle:0.13.0"
+    public void parseInstrumentTestCompile_androidGradle_0_13_2() {
+        String androidGradleTool = "com.android.tools.build:gradle:0.13.2"
         String configurationName = "androidTestCompile"
         parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
     }

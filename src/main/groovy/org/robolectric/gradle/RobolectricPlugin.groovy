@@ -4,7 +4,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginConvention
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
 import com.android.build.gradle.AppPlugin
@@ -73,7 +72,7 @@ class RobolectricPlugin implements Plugin<Project> {
                     javaCompile.classpath)
             testCompileClasspath.add robolectricTestConfig
 
-            SourceSet variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
+            def variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
             def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR")
             def testRunClasspath = testCompileClasspath.plus testDestinationDir
 
@@ -153,7 +152,7 @@ class RobolectricPlugin implements Plugin<Project> {
                 testRunTask.afterTest(extension.afterTest)
             }
 
-            List<String> includePatterns = !extension.includePatterns.empty ? extension.includePatterns : ['**/*Test.class']
+            def includePatterns = !extension.includePatterns.empty ? extension.includePatterns : ['**/*Test.class']
             testRunTask.include(includePatterns)
             if (!extension.excludePatterns.empty) {
                 testRunTask.exclude(extension.excludePatterns)
