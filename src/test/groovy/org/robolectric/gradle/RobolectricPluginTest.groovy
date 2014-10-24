@@ -238,6 +238,20 @@ class RobolectricPluginTest {
         parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
     }
 
+    @Test
+    public void ensureAarDependenciesOnClasspath() {
+        Project project = evaluatableProject()
+        project.repositories {
+            mavenCentral()
+        }
+        project.dependencies {
+            androidTestCompile 'com.squareup.assertj:assertj-android:1.0.0'
+        }
+        project.evaluate()
+
+        assertThat(project.tasks.compileTestDebugJava.classpath).contains(project.file('build/intermediates/exploded-aar/com.squareup.assertj/assertj-android/1.0.0/classes.jar'))
+    }
+
     private Project evaluatableProject() throws Exception {
         Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build();
         project.apply plugin: 'com.android.application'
