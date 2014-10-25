@@ -61,7 +61,7 @@ robolectric {
 
     // use afterTest to listen to the test execution results
     afterTest { descriptor, result ->
-        println "Executing test for {$descriptor.name} with result: ${result.resultType}"
+        println "Executing test for ${descriptor.name} with result: ${result.resultType}"
     }
 }
 ```
