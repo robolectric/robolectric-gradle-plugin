@@ -210,15 +210,11 @@ class RobolectricPlugin implements Plugin<Project> {
             project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
                 dirs.add(testDir)
             }
-            /*if (projectFlavorName) {
-                dirs.addAll(project.android.sourceSets["androidTest$projectFlavorName"][sourceType].srcDirs)
-            }*/
             projectFlavorNames.each { flavor ->
                 if (flavor) {
                     dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
                 }
             }
-
             return dirs
         }
     }
