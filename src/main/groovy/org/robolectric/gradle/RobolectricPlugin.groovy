@@ -76,7 +76,7 @@ class RobolectricPlugin implements Plugin<Project> {
             }
 
             def variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
-            def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR")
+            def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
             def testRunClasspath = testCompileClasspath.plus testDestinationDir
 
             variationSources.java.setSrcDirs config.getSourceDirs("java", projectFlavorNames)
@@ -210,11 +210,15 @@ class RobolectricPlugin implements Plugin<Project> {
             project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
                 dirs.add(testDir)
             }
+            /*if (projectFlavorName) {
+                dirs.addAll(project.android.sourceSets["androidTest$projectFlavorName"][sourceType].srcDirs)
+            }*/
             projectFlavorNames.each { flavor ->
                 if (flavor) {
                     dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
                 }
             }
+
             return dirs
         }
     }

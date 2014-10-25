@@ -93,6 +93,21 @@ class RobolectricPluginTest {
     }
 
     @Test
+    public void shouldNeverMixSrcDirsOfVariant() {
+        Project project = evaluatableProject()
+        project.android { productFlavors { prod {}; beta{} } }
+        project.android.sourceSets.androidTestProd.java.srcDirs = ['customTestFolder/src']
+        project.evaluate()
+        assertThat(project.tasks.testProdDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
+        assertThat(project.tasks.testBetaDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
+        assertThat(project.tasks.compileTestProdDebugJava.source.files)
+                .containsOnly(project.file("customTestFolder/src/SomeTest.java"),
+                          project.file("src/androidTest/java/SomeTest.java"))
+        assertThat(project.tasks.compileTestBetaDebugJava.source.files)
+                .doesNotContain(project.file("customTestFolder/src/SomeTest.java"))
+    }
+
+    @Test
     public void supportsAfterTestListenerForTheTestTask() {
         Project project = evaluatableProject()
         project.robolectric {
@@ -219,16 +234,17 @@ class RobolectricPluginTest {
     }
 
     @Test
-    public void dumpsAllTestClassFilesAndResourcesIntoTheSameDirectory() {
+    public void dumpsAllTestClassFilesAndResourcesIntoRespectiveFlavorDirectory() {
         Project project = evaluatableProject()
         project.android { productFlavors { prod {}; beta {} } }
         project.evaluate()
 
-        def expectedDestination = project.files("$project.buildDir/test-classes").singleFile
-        assertThat(project.tasks.compileTestProdDebugJava.destinationDir).isEqualTo(expectedDestination)
-        assertThat(project.tasks.compileTestBetaDebugJava.destinationDir).isEqualTo(expectedDestination)
-        assertThat(project.tasks.processTestProdDebugResources.destinationDir).isEqualTo(expectedDestination)
-        assertThat(project.tasks.processTestBetaDebugResources.destinationDir).isEqualTo(expectedDestination)
+        def expectedProdFlavorDestination = project.files("$project.buildDir/test-classes/prod/debug").singleFile
+        def expectedBetaFlavorDestination = project.files("$project.buildDir/test-classes/beta/debug").singleFile
+        assertThat(project.tasks.compileTestProdDebugJava.destinationDir).isEqualTo(expectedProdFlavorDestination)
+        assertThat(project.tasks.compileTestBetaDebugJava.destinationDir).isEqualTo(expectedBetaFlavorDestination)
+        assertThat(project.tasks.processTestProdDebugResources.destinationDir).isEqualTo(expectedProdFlavorDestination)
+        assertThat(project.tasks.processTestBetaDebugResources.destinationDir).isEqualTo(expectedBetaFlavorDestination)
     }
 
     @Test @Ignore
