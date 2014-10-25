@@ -1,14 +1,13 @@
 package org.robolectric.gradle
 
-import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginConvention
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryPlugin
 
 class RobolectricPlugin implements Plugin<Project> {
     private static final String TEST_TASK_NAME = 'test'
@@ -28,7 +27,7 @@ class RobolectricPlugin implements Plugin<Project> {
 
         // Apply the base of the 'java' plugin so source set and java compilation is easier.
         project.plugins.apply JavaBasePlugin
-        JavaPluginConvention javaConvention = project.convention.getPlugin JavaPluginConvention
+        def javaConvention = project.convention.getPlugin JavaPluginConvention
 
         // Create a root 'test' task for running all unit tests.
         def testTask = project.tasks.create(TEST_TASK_NAME, TestReport)
@@ -38,44 +37,45 @@ class RobolectricPlugin implements Plugin<Project> {
         // Add our new task to Gradle's standard "check" task.
         project.tasks.check.dependsOn testTask
 
-        config.getVariants().all { variant ->
+        config.variants.all { variant ->
             if (variant.buildType.name.equals(RELEASE_VARIANT)) {
                 log.debug("Skipping release build type.")
-                return;
+                return
             }
 
             // Get the build type name (e.g., "Debug", "Release").
             def buildTypeName = variant.buildType.name.capitalize()
-            def projectFlavorNames = [""]
-            if (config.hasAppPlugin()) {
-                // Flavors are only available for the app plugin (e.g., "Free", "Paid").
-                projectFlavorNames = variant.productFlavors.collect { it.name.capitalize() }
-                // TODO support flavor groups... ugh
-                if (projectFlavorNames.isEmpty()) {
-                    projectFlavorNames = [""]
-                }
+
+            def projectFlavorNames = variant.productFlavors.collect { it.name.capitalize() }
+            // TODO support flavor groups... ugh
+            if (projectFlavorNames.isEmpty()) {
+                projectFlavorNames = [""]
             }
+
             def projectFlavorName = projectFlavorNames.join()
 
             // The combination of flavor and type yield a unique "variation". This value is used for
             // looking up existing associated tasks as well as naming the task we are about to create.
             def variationName = "$projectFlavorName$buildTypeName"
             // Grab the task which outputs the merged manifest, resources, and assets for this flavor.
-            def processedManifestPath = variant.processManifest.manifestOutputFile
+            def processedManifestPath = variant.outputs[0].processManifest.manifestOutputFile
             def processedResourcesPath = variant.mergeResources.outputDir
             def processedAssetsPath = variant.mergeAssets.outputDir
 
-            def javaCompile = variant.javaCompile;
-
-            // Add the corresponding java compilation output to the 'testCompile' configuration to
-            // create the classpath for the test file compilation.
-            def robolectricTestConfig = project.configurations.getByName("androidTestCompile")
+            def javaCompile = variant.javaCompile
+            def testVariant = variant.testVariant
 
             def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir,
                     javaCompile.classpath)
-            testCompileClasspath.add robolectricTestConfig
 
-            SourceSet variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
+            // Even though testVariant is marked as Nullable, I haven't seen it being null at all.
+            if (testVariant != null) {
+                testCompileClasspath.add project.files(testVariant.variantData.variantConfiguration.compileClasspath)
+            } else {
+                testCompileClasspath.add project.configurations.getByName("androidTestCompile")
+            }
+
+            def variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
             def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR")
             def testRunClasspath = testCompileClasspath.plus testDestinationDir
 
@@ -103,7 +103,15 @@ class RobolectricPlugin implements Plugin<Project> {
             testCompileTask.source = variationSources.java
             testCompileTask.destinationDir = testDestinationDir.getSingleFile()
             testCompileTask.doFirst {
-                testCompileTask.options.bootClasspath = config.getPlugin().getBootClasspath().join(File.pathSeparator)
+                testCompileTask.options.bootClasspath = config.plugin.getBootClasspath().join(File.pathSeparator)
+            }
+
+            if (testVariant != null) {
+                def prepareTestTask = testVariant.variantData.prepareDependenciesTask
+                if (prepareTestTask != null) {
+                    // Depend on the prepareDependenciesTask of the TestVariant to prepare the AAR dependencies
+                    testCompileTask.dependsOn prepareTestTask
+                }
             }
 
             // Clear out the group/description of the classes plugin so it's not top-level.
@@ -128,7 +136,7 @@ class RobolectricPlugin implements Plugin<Project> {
                     project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
             testRunTask.doFirst {
                 // Prepend the Android runtime onto the classpath.
-                def androidRuntime = project.files(config.getPlugin().getBootClasspath().join(File.pathSeparator))
+                def androidRuntime = project.files(config.plugin.getBootClasspath().join(File.pathSeparator))
                 testRunTask.classpath = testRunClasspath.plus project.files(androidRuntime)
                 log.debug("jUnit classpath: $testRunTask.classpath.asPath")
             }
@@ -147,14 +155,19 @@ class RobolectricPlugin implements Plugin<Project> {
             testRunTask.systemProperties.put('android.manifest', processedManifestPath)
             testRunTask.systemProperties.put('android.resources', processedResourcesPath)
             testRunTask.systemProperties.put('android.assets', processedAssetsPath)
+
+            // Set extension properties
+            testRunTask.setMaxParallelForks(extension.maxParallelForks)
+            testRunTask.setForkEvery(extension.forkEvery)
             testRunTask.setMaxHeapSize(extension.maxHeapSize)
+            testRunTask.jvmArgs(extension.jvmArgs)
 
             // Set afterTest closure
             if (extension.afterTest != null) {
                 testRunTask.afterTest(extension.afterTest)
             }
 
-            List<String> includePatterns = !extension.includePatterns.empty ? extension.includePatterns : ['**/*Test.class']
+            def includePatterns = !extension.includePatterns.empty ? extension.includePatterns : ['**/*Test.class']
             testRunTask.include(includePatterns)
             if (!extension.excludePatterns.empty) {
                 testRunTask.exclude(extension.excludePatterns)
@@ -176,20 +189,20 @@ class RobolectricPlugin implements Plugin<Project> {
             this.hasLibPlugin = project.plugins.find { p -> p instanceof LibraryPlugin }
 
             if (!hasAppPlugin && !hasLibPlugin) {
-                throw new IllegalStateException("The 'android' or 'android-library' plugin is required.")
+                throw new IllegalStateException("The 'com.android.application' or 'com.android.library' plugin is required.")
             } else if (hasAppPlugin && hasLibPlugin) {
-                throw new IllegalStateException("Having both 'android' and 'android-library' plugin is not supported.")
+                throw new IllegalStateException("Having both 'com.android.application' and 'com.android.library' plugin is not supported.")
             }
         }
 
         def getVariants() {
             if (hasLibPlugin) return project.android.libraryVariants
-            if (hasAppPlugin) return project.android.applicationVariants
+            return project.android.applicationVariants
         }
 
         def getPlugin() {
-            if (hasAppPlugin) return project.plugins.find { p -> p instanceof AppPlugin }
             if (hasLibPlugin) return project.plugins.find { p -> p instanceof LibraryPlugin }
+            return project.plugins.find { p -> p instanceof AppPlugin }
         }
 
         def getSourceDirs(String sourceType, List<String> projectFlavorNames) {
@@ -202,15 +215,7 @@ class RobolectricPlugin implements Plugin<Project> {
                     dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
                 }
             }
-            return dirs;
-        }
-
-        boolean hasAppPlugin() {
-            return hasAppPlugin
-        }
-
-        boolean hasLibPlugin() {
-            return hasLibPlugin
+            return dirs
         }
     }
 }

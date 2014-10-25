@@ -6,7 +6,7 @@ A Gradle plugin which enables Robolectric tests.
 
 ## Compatibility
 
-Currently compatible with version 0.12.x of the android gradle plugin.
+Currently compatible with version 0.13.x of the android gradle plugin.
 
 ## Getting Started
 
@@ -18,7 +18,7 @@ deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.go
 
 Add the plugin to your `buildscript`'s `dependencies` section:
 ```groovy
-classpath 'org.robolectric:robolectric-gradle-plugin:0.12.+'
+classpath 'org.robolectric:robolectric-gradle-plugin:0.13.+'
 ```
 
 Apply the `robolectric` plugin:
@@ -45,6 +45,16 @@ robolectric {
 
     // configure max heap size of the test JVM
     maxHeapSize = '2048m'
+
+    // configure the test JVM arguments
+    jvmArgs '-XX:MaxPermSize=512m', '-XX:-UseSplitVerifier'
+    
+    // Specify max number of processes (default is 1)
+    maxParallelForks = 4
+    
+    // Specify max number of test classes to execute in a test process
+    // before restarting the process (default is unlimited)
+    forkEvery = 150
 
     // configure whether failing tests should fail the build
     ignoreFailures true
