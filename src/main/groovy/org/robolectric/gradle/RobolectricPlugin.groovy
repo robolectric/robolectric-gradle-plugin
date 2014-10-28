@@ -13,7 +13,7 @@ class RobolectricPlugin implements Plugin<Project> {
     private static final String TEST_TASK_NAME = 'test'
     private static final String TEST_CLASSES_DIR = 'test-classes'
     private static final String TEST_REPORT_DIR = 'test-report'
-    private static final String RELEASE_VARIANT = 'release'
+    private static final String DEBUG_BUILD_TYPE = 'debug'
 
     void apply(Project project) {
         def extension = project.extensions.create('robolectric', RobolectricTestExtension)
@@ -38,8 +38,8 @@ class RobolectricPlugin implements Plugin<Project> {
         project.tasks.check.dependsOn testTask
 
         config.variants.all { variant ->
-            if (variant.buildType.name.equals(RELEASE_VARIANT)) {
-                log.debug("Skipping release build type.")
+            if (!variant.buildType.name.equals(DEBUG_BUILD_TYPE)) {
+                log.debug("Skipping non debug build type.")
                 return
             }
 
