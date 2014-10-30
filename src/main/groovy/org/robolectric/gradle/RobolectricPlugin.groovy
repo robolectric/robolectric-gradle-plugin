@@ -79,8 +79,8 @@ class RobolectricPlugin implements Plugin<Project> {
             def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR")
             def testRunClasspath = testCompileClasspath.plus testDestinationDir
 
-            variationSources.java.setSrcDirs config.getSourceDirs("java", projectFlavorNames)
-            variationSources.resources.setSrcDirs config.getSourceDirs("res", projectFlavorNames)
+            variationSources.java.setSrcDirs config.getSourceDirs(["java"], projectFlavorNames)
+            variationSources.resources.setSrcDirs config.getSourceDirs(["res", "resources"], projectFlavorNames)
 
             log.debug("----------------------------------------")
             log.debug("build type name: $buildTypeName")
@@ -205,14 +205,16 @@ class RobolectricPlugin implements Plugin<Project> {
             return project.plugins.find { p -> p instanceof AppPlugin }
         }
 
-        def getSourceDirs(String sourceType, List<String> projectFlavorNames) {
+        def getSourceDirs(List<String> sourceTypes, List<String> projectFlavorNames) {
             def dirs = []
-            project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
-                dirs.add(testDir)
-            }
-            projectFlavorNames.each { flavor ->
-                if (flavor) {
-                    dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
+            sourceTypes.each { sourceType ->
+                project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
+                    dirs.add(testDir)
+                }
+                projectFlavorNames.each { flavor ->
+                    if (flavor) {
+                        dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
+                    }
                 }
             }
             return dirs
