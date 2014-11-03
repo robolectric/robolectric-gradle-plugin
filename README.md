@@ -6,7 +6,7 @@ A Gradle plugin which enables Robolectric tests.
 
 ## Compatibility
 
-Currently compatible with version 0.13.x of the android gradle plugin.
+Currently compatible with version 0.14.x of the android gradle plugin.
 
 ## Getting Started
 
@@ -18,7 +18,7 @@ deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.go
 
 Add the plugin to your `buildscript`'s `dependencies` section:
 ```groovy
-classpath 'org.robolectric:robolectric-gradle-plugin:0.13.+'
+classpath 'org.robolectric:robolectric-gradle-plugin:0.14.+'
 ```
 
 Apply the `robolectric` plugin:
@@ -61,7 +61,7 @@ robolectric {
 
     // use afterTest to listen to the test execution results
     afterTest { descriptor, result ->
-        println "Executing test for {$descriptor.name} with result: ${result.resultType}"
+        println "Executing test for ${descriptor.name} with result: ${result.resultType}"
     }
 }
 ```

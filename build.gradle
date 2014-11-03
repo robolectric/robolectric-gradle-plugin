@@ -13,7 +13,7 @@ apply plugin: 'maven'
 apply plugin: 'nexus'
 
 group = 'org.robolectric'
-version = '0.13.3-SNAPSHOT'
+version = '0.14.0-SNAPSHOT'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -25,7 +25,7 @@ dependencies {
 
     compile gradleApi()
     compile localGroovy()
-    compile 'com.android.tools.build:gradle:0.13.2'
+    compile 'com.android.tools.build:gradle:0.14.0'
 
     testCompile 'junit:junit:4.10'
     testCompile 'org.easytesting:fest-assert-core:2.0M10'
