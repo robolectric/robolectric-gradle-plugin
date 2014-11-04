@@ -8,8 +8,5 @@ android:
     - build-tools-21.1.0
     - android-21
 
-install:
-  - ./gradlew install
-
 script:
   - ./gradlew check --stacktrace
