@@ -232,8 +232,8 @@ class RobolectricPluginTest {
     }
 
     @Test @Ignore
-    public void parseInstrumentTestCompile_androidGradle_0_13_2() {
-        String androidGradleTool = "com.android.tools.build:gradle:0.13.2"
+    public void parseInstrumentTestCompile_androidGradle_0_14_0() {
+        String androidGradleTool = "com.android.tools.build:gradle:0.14.0"
         String configurationName = "androidTestCompile"
         parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
     }
@@ -257,8 +257,8 @@ class RobolectricPluginTest {
         project.apply plugin: 'com.android.application'
         project.apply plugin: 'robolectric'
         project.android {
-            compileSdkVersion 20
-            buildToolsVersion '20.0.0'
+            compileSdkVersion 21
+            buildToolsVersion '21.1.0'
         }
         return project
     }
@@ -268,8 +268,8 @@ class RobolectricPluginTest {
         project.apply plugin: 'com.android.library'
         project.apply plugin: 'robolectric'
         project.android {
-            compileSdkVersion 20
-            buildToolsVersion '20.0.0'
+            compileSdkVersion 21
+            buildToolsVersion '21.1.0'
         }
         return project
     }
@@ -291,8 +291,8 @@ class RobolectricPluginTest {
         project.apply plugin: 'com.android.application'
         project.apply plugin: 'robolectric'
         project.android {
-            compileSdkVersion 20
-            buildToolsVersion '20.0.0'
+            compileSdkVersion 21
+            buildToolsVersion '21.1.0'
         }
 
         project.evaluate()

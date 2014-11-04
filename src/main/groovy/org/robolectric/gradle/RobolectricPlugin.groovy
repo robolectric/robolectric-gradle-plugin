@@ -160,7 +160,7 @@ class RobolectricPlugin implements Plugin<Project> {
             testRunTask.setMaxParallelForks(extension.maxParallelForks)
             testRunTask.setForkEvery(extension.forkEvery)
             testRunTask.setMaxHeapSize(extension.maxHeapSize)
-            testRunTask.jvmArgs(extension.jvmArgs)
+            testRunTask.setJvmArgs(extension.jvmArgs)
 
             // Set afterTest closure
             if (extension.afterTest != null) {

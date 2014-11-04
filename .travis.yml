@@ -5,8 +5,8 @@ jdk:
 
 android:
   components:
-    - build-tools-20.0.0
-    - android-20
+    - build-tools-21.1.0
+    - android-21
 
 install:
   - ./gradlew install
