@@ -10,3 +10,6 @@ android:
 
 script:
   - ./gradlew check --stacktrace
+
+after_success:
+- ./gradlew jacocoTestReport coveralls
