@@ -4,6 +4,10 @@
 
 A Gradle plugin which enables Robolectric tests.
 
+## Important Note
+
+This document describes the state of the latest development version of this plugin.  For documentation of the latest release, see [the README.md for that release](https://github.com/robolectric/robolectric-gradle-plugin/blob/0.13.2/README.md).
+
 ## Compatibility
 
 Currently compatible with version 0.14.x of the android gradle plugin.
