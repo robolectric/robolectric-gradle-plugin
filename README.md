@@ -1,6 +1,6 @@
 # Robolectric Gradle Plugin
 
-[![Build Status](https://secure.travis-ci.org/robolectric/robolectric-gradle-plugin.png?branch=master)](http://travis-ci.org/robolectric/robolectric-gradle-plugin)
+[![Build Status](https://secure.travis-ci.org/robolectric/robolectric-gradle-plugin.png?branch=master)](http://travis-ci.org/robolectric/robolectric-gradle-plugin) [![Coverage Status](https://coveralls.io/repos/kageiit/robolectric-gradle-plugin/badge.png?branch=add_coveralls_io_code_coverage)](https://coveralls.io/r/kageiit/robolectric-gradle-plugin?branch=add_coveralls_io_code_coverage)
 
 A Gradle plugin which enables Robolectric tests.
 

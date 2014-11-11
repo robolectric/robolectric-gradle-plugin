@@ -5,12 +5,15 @@ buildscript {
 
     dependencies {
         classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.3'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
     }
 }
 
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'nexus'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
 
 group = 'org.robolectric'
 version = '0.14.0-SNAPSHOT'
@@ -34,6 +37,12 @@ dependencies {
 install {
     repositories.mavenInstaller {
         pom.artifactId = 'robolectric-gradle-plugin'
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
     }
 }
 
