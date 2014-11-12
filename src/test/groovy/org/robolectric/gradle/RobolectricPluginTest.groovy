@@ -272,7 +272,7 @@ class RobolectricPluginTest {
         project.evaluate()
 
         assertThat(project.tasks.compileTestDebugJava.classpath.files.find {
-            it.absolutePath.contains('junit/junit/4.8')
+            it.absolutePath.contains("junit${File.separator}junit${File.separator}4.8")
         }).isNotNull()
     }
 
@@ -288,7 +288,7 @@ class RobolectricPluginTest {
         project.evaluate()
 
         assertThat(project.tasks.compileTestDebugJava.classpath.files.find {
-            it.absolutePath.contains('com.squareup.assertj/assertj-android/1.0.0/classes.jar')
+            it.absolutePath.contains("com.squareup.assertj${File.separator}assertj-android${File.separator}1.0.0${File.separator}classes.jar")
         }).isNotNull()
     }
 
