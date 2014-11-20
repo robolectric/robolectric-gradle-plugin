@@ -1,16 +1,15 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
 
     dependencies {
-        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.3'
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.1.1'
     }
 }
 
 apply plugin: 'groovy'
-apply plugin: 'maven'
-apply plugin: 'nexus'
+apply plugin: 'com.bmuschko.nexus'
 
 group = 'org.robolectric'
 version = '0.14.0-SNAPSHOT'
@@ -29,18 +28,6 @@ dependencies {
 
     testCompile 'junit:junit:4.10'
     testCompile 'org.easytesting:fest-assert-core:2.0M10'
-}
-
-install {
-    repositories.mavenInstaller {
-        pom.artifactId = 'robolectric-gradle-plugin'
-    }
-}
-
-uploadArchives {
-    repositories.mavenDeployer {
-        pom.artifactId = 'robolectric-gradle-plugin'
-    }
 }
 
 modifyPom {
