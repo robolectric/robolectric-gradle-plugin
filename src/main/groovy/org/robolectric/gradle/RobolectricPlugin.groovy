@@ -10,7 +10,7 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
 
 class RobolectricPlugin implements Plugin<Project> {
-    private static final String[] SUPPORTED_ANDROID_VERSIONS = ['0.14.']
+    private static final String[] SUPPORTED_ANDROID_VERSIONS = ['0.14.', '1.0.']
     private static final String TEST_TASK_NAME = 'test'
     private static final String TEST_CLASSES_DIR = 'test-classes'
     private static final String TEST_REPORT_DIR = 'test-report'

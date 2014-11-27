@@ -302,6 +302,7 @@ class RobolectricPluginTest {
 
         assertThat(RobolectricPlugin.checkAndroidVersion('0.14.+')).isTrue()
         assertThat(RobolectricPlugin.checkAndroidVersion('0.14.0')).isTrue()
+        assertThat(RobolectricPlugin.checkAndroidVersion('1.0.0-rc1')).isTrue()
     }
 
     @Test(expected = ProjectConfigurationException.class)
