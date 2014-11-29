@@ -1,6 +1,7 @@
 package org.robolectric.gradle
 
 import org.gradle.api.Project
+import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.internal.plugins.PluginApplicationException
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
@@ -301,51 +302,61 @@ class RobolectricPluginTest {
 
         assertThat(RobolectricPlugin.checkAndroidVersion('0.14.+')).isTrue()
         assertThat(RobolectricPlugin.checkAndroidVersion('0.14.0')).isTrue()
+        assertThat(RobolectricPlugin.checkAndroidVersion('1.0.0-rc1')).isTrue()
     }
 
-    @Test(expected = PluginApplicationException.class)
+    @Test(expected = ProjectConfigurationException.class)
     public void pluginFailsWithOutdatedAndroidPlugin() {
-        Project project = evaluatableProjectWithAndroidVersion('com.android.tools.build:gradle:0.12.0');
+        Project project = evaluatableProjectWithAndroidVersion('com.android.tools.build:gradle:0.12.0')
+        project.evaluate()
+    }
+
+    @Test
+    public void pluginAcceptsOutdatedAndroidPluginByExtension() {
+        Project project = evaluatableProjectWithAndroidVersion('com.android.tools.build:gradle:0.12.0')
+        project.robolectric {
+            ignoreVersionCheck true
+        }
         project.evaluate()
     }
 
     @Test
     public void pluginAcceptsSupportedAndroidPlugin() {
-        Project project = evaluatableProjectWithAndroidVersion('com.android.tools.build:gradle:0.14.0');
+        Project project = evaluatableProjectWithAndroidVersion('com.android.tools.build:gradle:0.14.0')
         project.evaluate()
     }
 
     private Project evaluatableProject() {
-        return evaluatableProjectWithPlugin('com.android.application')
+        return evaluatableProjectWithPluginAndBuildscript('com.android.application', null)
     }
 
     private Project evaluatableLibraryProject() {
-        return evaluatableProjectWithPlugin('com.android.library')
-    }
-
-    private Project evaluatableProjectWithPlugin(String plugin) {
-        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build();
-        project.apply plugin: plugin
-        project.apply plugin: 'robolectric'
-        project.android {
-            compileSdkVersion 21
-            buildToolsVersion '21.1.0'
-        }
-        return project
+        return evaluatableProjectWithPluginAndBuildscript('com.android.library', null)
     }
 
     private Project evaluatableProjectWithAndroidVersion(String androidVersion) {
-        Project project = ProjectBuilder.builder().build();
-        project.buildscript {
+        return evaluatableProjectWithPluginAndBuildscript('com.android.application', {
             repositories {
                 mavenCentral()
             }
             dependencies {
                 classpath androidVersion
             }
+        })
+    }
+
+    private Project evaluatableProjectWithPluginAndBuildscript(String plugin, Closure buildscript) {
+        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build()
+        if (buildscript) {
+            project.buildscript buildscript
         }
-        project.apply plugin: 'com.android.application'
+        project.apply plugin: plugin
         project.apply plugin: 'robolectric'
+        project.android {
+            compileSdkVersion 21
+            buildToolsVersion '21.1.1'
+        }
         return project
     }
+
 }

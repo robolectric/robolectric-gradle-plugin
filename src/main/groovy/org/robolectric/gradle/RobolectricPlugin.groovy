@@ -1,32 +1,26 @@
 package org.robolectric.gradle
 
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
-import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.LibraryPlugin
 
 class RobolectricPlugin implements Plugin<Project> {
-    private static final String[] SUPPORTED_ANDROID_VERSIONS = ['0.14.'];
+    private static final String[] SUPPORTED_ANDROID_VERSIONS = ['0.14.', '1.0.']
     private static final String TEST_TASK_NAME = 'test'
     private static final String TEST_CLASSES_DIR = 'test-classes'
     private static final String TEST_REPORT_DIR = 'test-report'
     private static final String RELEASE_VARIANT = 'release'
 
+    @Override
     void apply(Project project) {
         def extension = project.extensions.create('robolectric', RobolectricTestExtension)
         def log = project.logger
         def config = new PluginConfiguration(project)
-
-        def androidGradlePlugin = project.buildscript.configurations.classpath.dependencies.find {
-            it.group != null && it.group.equals('com.android.tools.build') && it.name.equals('gradle')
-        }
-        if (androidGradlePlugin != null && !checkAndroidVersion(androidGradlePlugin.version)) {
-            throw new IllegalStateException("The Android Gradle plugin ${androidGradlePlugin.version} is not supported.")
-        }
 
         // Create the configuration for test-only dependencies.
         def testConfiguration = project.configurations.create(TEST_TASK_NAME + 'Compile')
@@ -46,6 +40,17 @@ class RobolectricPlugin implements Plugin<Project> {
         project.tasks.check.dependsOn testTask
 
         config.variants.all { variant ->
+            def androidGradlePlugin = project.buildscript.configurations.classpath.dependencies.find {
+                it.group != null && it.group.equals('com.android.tools.build') && it.name.equals('gradle')
+            }
+            if (androidGradlePlugin != null && !checkAndroidVersion(androidGradlePlugin.version)) {
+                if (extension.ignoreVersionCheck) {
+                    log.warn("The Android Gradle plugin ${androidGradlePlugin.version} is not supported.")
+                } else {
+                    throw new IllegalStateException("The Android Gradle plugin ${androidGradlePlugin.version} is not supported.")
+                }
+            }
+
             if (variant.buildType.name.equals(RELEASE_VARIANT)) {
                 log.debug("Skipping release build type.")
                 return
@@ -197,9 +202,9 @@ class RobolectricPlugin implements Plugin<Project> {
     }
 
     class PluginConfiguration {
-        private final Project project;
-        private final boolean hasAppPlugin;
-        private final boolean hasLibPlugin;
+        private final Project project
+        private final boolean hasAppPlugin
+        private final boolean hasLibPlugin
 
         PluginConfiguration(Project project) {
             this.project = project

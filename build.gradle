@@ -12,7 +12,7 @@ apply plugin: 'groovy'
 apply plugin: 'com.bmuschko.nexus'
 
 group = 'org.robolectric'
-version = '0.14.0'
+version = '0.14.1-SNAPSHOT'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -24,7 +24,7 @@ dependencies {
 
     compile gradleApi()
     compile localGroovy()
-    compile 'com.android.tools.build:gradle:0.14.1'
+    compile 'com.android.tools.build:gradle:1.0.0-rc1'
 
     testCompile 'junit:junit:4.10'
     testCompile 'org.assertj:assertj-core:1.7.0'
