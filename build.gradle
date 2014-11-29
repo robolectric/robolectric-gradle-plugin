@@ -12,7 +12,7 @@ apply plugin: 'groovy'
 apply plugin: 'com.bmuschko.nexus'
 
 group = 'org.robolectric'
-version = '0.14.1'
+version = '0.14.2-SNAPSHOT'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
