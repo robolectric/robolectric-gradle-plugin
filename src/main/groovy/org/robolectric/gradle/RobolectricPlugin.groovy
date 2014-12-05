@@ -230,13 +230,14 @@ class RobolectricPlugin implements Plugin<Project> {
 
         def getSourceDirs(List<String> sourceTypes, List<String> projectFlavorNames) {
             def dirs = []
+            def sourceSet = project.android.sourceSets.findByName("robolectricTest") ? "robolectricTest" : "androidTest"
             sourceTypes.each { sourceType ->
-                project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
+                project.android.sourceSets[sourceSet][sourceType].srcDirs.each { testDir ->
                     dirs.add(testDir)
                 }
                 projectFlavorNames.each { flavor ->
-                    if (flavor) {
-                        dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
+                    if (flavor && project.android.sourceSets.findByName("$sourceSet$flavor")) {
+                        dirs.addAll(project.android.sourceSets["$sourceSet$flavor"][sourceType].srcDirs)
                     }
                 }
             }
