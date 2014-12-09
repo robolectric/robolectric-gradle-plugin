@@ -81,12 +81,9 @@ class RobolectricPlugin implements Plugin<Project> {
             def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir,
                     javaCompile.classpath)
 
-            // Even though testVariant is marked as Nullable, I haven't seen it being null at all.
-            if (testVariant != null) {
-                testCompileClasspath.add project.files(testVariant.variantData.variantConfiguration.compileClasspath)
-            } else {
-                testCompileClasspath.add project.configurations.getByName("androidTestCompile")
-            }
+            // determine which configuration we want to add by which sourceSet we're using
+            // if the user has defined a robolectricTest sourceSet, then we'll use robolectricTestCompile
+            testCompileClasspath.add project.configurations.getByName("${config.sourceSetName()}Compile")
 
             def variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
             def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR")
@@ -148,9 +145,9 @@ class RobolectricPlugin implements Plugin<Project> {
             testRunTask.reports.html.destination =
                     project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
             testRunTask.doFirst {
-                // Prepend the Android runtime onto the classpath.
-                def androidRuntime = project.files(config.plugin.getBootClasspath().join(File.pathSeparator))
-                testRunTask.classpath = testRunClasspath.plus project.files(androidRuntime)
+                // Append the Android runtime onto the classpath.
+                def androidRuntime = project.files(config.plugin.getBootClasspath())
+                testRunTask.classpath = testRunClasspath.plus androidRuntime
                 log.debug("jUnit classpath: $testRunTask.classpath.asPath")
             }
 
@@ -231,16 +228,20 @@ class RobolectricPlugin implements Plugin<Project> {
         def getSourceDirs(List<String> sourceTypes, List<String> projectFlavorNames) {
             def dirs = []
             sourceTypes.each { sourceType ->
-                project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
+                project.android.sourceSets[sourceSetName()][sourceType].srcDirs.each { testDir ->
                     dirs.add(testDir)
                 }
                 projectFlavorNames.each { flavor ->
-                    if (flavor) {
-                        dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
+                    if (flavor && project.android.sourceSets.findByName("${sourceSetName()}$flavor")) {
+                        dirs.addAll(project.android.sourceSets["${sourceSetName()}$flavor"][sourceType].srcDirs)
                     }
                 }
             }
             return dirs
+        }
+
+        def sourceSetName() {
+            project.android.sourceSets.findByName("robolectricTest") ? "robolectricTest" : "androidTest"
         }
     }
 }
