@@ -81,12 +81,9 @@ class RobolectricPlugin implements Plugin<Project> {
             def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir,
                     javaCompile.classpath)
 
-            // Even though testVariant is marked as Nullable, I haven't seen it being null at all.
-            if (testVariant != null) {
-                testCompileClasspath.add project.files(testVariant.variantData.variantConfiguration.compileClasspath)
-            } else {
-                testCompileClasspath.add project.configurations.getByName("androidTestCompile")
-            }
+            // determine which configuration we want to add by which sourceSet we're using
+            // if the user has defined a robolectricTest sourceSet, then we'll use robolectricTestCompile
+            testCompileClasspath.add project.configurations.getByName("${config.sourceSetName()}Compile")
 
             def variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
             def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR")
@@ -230,18 +227,21 @@ class RobolectricPlugin implements Plugin<Project> {
 
         def getSourceDirs(List<String> sourceTypes, List<String> projectFlavorNames) {
             def dirs = []
-            def sourceSet = project.android.sourceSets.findByName("robolectricTest") ? "robolectricTest" : "androidTest"
             sourceTypes.each { sourceType ->
-                project.android.sourceSets[sourceSet][sourceType].srcDirs.each { testDir ->
+                project.android.sourceSets[sourceSetName()][sourceType].srcDirs.each { testDir ->
                     dirs.add(testDir)
                 }
                 projectFlavorNames.each { flavor ->
-                    if (flavor && project.android.sourceSets.findByName("$sourceSet$flavor")) {
-                        dirs.addAll(project.android.sourceSets["$sourceSet$flavor"][sourceType].srcDirs)
+                    if (flavor && project.android.sourceSets.findByName("${sourceSetName()}$flavor")) {
+                        dirs.addAll(project.android.sourceSets["${sourceSetName()}$flavor"][sourceType].srcDirs)
                     }
                 }
             }
             return dirs
+        }
+
+        def sourceSetName() {
+            project.android.sourceSets.findByName("robolectricTest") ? "robolectricTest" : "androidTest"
         }
     }
 }
