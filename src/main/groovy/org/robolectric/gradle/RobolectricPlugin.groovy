@@ -151,7 +151,6 @@ class RobolectricPlugin implements Plugin<Project> {
                 // Prepend the Android runtime onto the classpath.
                 def androidRuntime = project.files(config.plugin.getBootClasspath().join(File.pathSeparator))
                 testRunTask.classpath = testRunClasspath.plus project.files(androidRuntime)
-                log.debug("jUnit classpath: $testRunTask.classpath.asPath")
             }
 
             // Work around http://issues.gradle.org/browse/GRADLE-1682
