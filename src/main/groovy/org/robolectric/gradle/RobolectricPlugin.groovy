@@ -15,6 +15,7 @@ class RobolectricPlugin implements Plugin<Project> {
     private static final String TEST_CLASSES_DIR = 'test-classes'
     private static final String TEST_REPORT_DIR = 'test-report'
     private static final String RELEASE_VARIANT = 'release'
+    private static final String SINGLE_TEST_PROPERTY = 'test.single'
 
     @Override
     void apply(Project project) {
@@ -180,11 +181,21 @@ class RobolectricPlugin implements Plugin<Project> {
                 testRunTask.afterTest(extension.afterTest)
             }
 
-            def includePatterns = !extension.includePatterns.empty ? extension.includePatterns : ['**/*Test.class']
-            testRunTask.include(includePatterns)
-            if (!extension.excludePatterns.empty) {
-                testRunTask.exclude(extension.excludePatterns)
+            def singleTest = System.getProperty(SINGLE_TEST_PROPERTY)
+            def includePatterns = null
+
+            if (singleTest == null) {
+              includePatterns = !extension.includePatterns.empty ? extension.includePatterns : ['**/*Test.class']
+              if (!extension.excludePatterns.empty) {
+                  testRunTask.exclude(extension.excludePatterns)
+              }
             }
+            else {
+              includePatterns = ["**/${singleTest}*.class"]
+            }
+
+            testRunTask.include(includePatterns)
+
             testRunTask.ignoreFailures = extension.ignoreFailures
 
             testTask.reportOn testRunTask

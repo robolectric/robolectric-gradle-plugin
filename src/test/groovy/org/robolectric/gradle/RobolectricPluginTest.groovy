@@ -233,7 +233,26 @@ class RobolectricPluginTest {
     }
 
     @Test
-    public void supportsIngoreFailures() {
+    public void supportsSingleTestIncludes() {
+        Project project = evaluatableProject()
+        // All other includes and excludes are ignored
+        project.robolectric {
+            exclude "**/lame_tests/**"
+            exclude "**/lame_tests2/**", "**/lame_tests_3/**"
+            include "**/robo_tests/**"
+            include "**/robo_tests2/**", "**/robo_tests3/**"
+        }
+        // This single test overrides all
+        System.setProperty("test.single", "MyOneTest")
+        project.evaluate()
+
+        assertThat(project.tasks.testDebug.excludes).isEmpty()
+        // MyOneTest*.class to match the behavior of the groovy JavaBasePlugin
+        assertThat(project.tasks.testDebug.includes).hasSize(1).contains("**/MyOneTest*.class");
+    }
+
+    @Test
+    public void supportsIgnoreFailures() {
         Project project = evaluatableProject()
         project.robolectric {
             ignoreFailures true
