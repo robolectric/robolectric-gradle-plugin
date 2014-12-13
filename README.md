@@ -39,6 +39,8 @@ Place your tests in `src/test/java` or `src/androidTest/java` You can also add p
 
 Run your tests by calling `gradle clean test`.
 
+Run a single test by calling `gradle test -Dtest.single=MyOneTest`.
+
 ## Configuration using DSL
 
 ```groovy
