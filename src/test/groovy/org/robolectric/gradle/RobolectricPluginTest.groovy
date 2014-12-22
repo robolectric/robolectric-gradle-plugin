@@ -1,15 +1,14 @@
 package org.robolectric.gradle
 
-import org.junit.Rule
-import org.junit.Test
-import org.junit.Ignore
-import org.gradle.api.Task
 import org.gradle.api.Project
+import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.internal.plugins.PluginApplicationException
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Rule
+import org.junit.Test
 import org.junit.rules.ExpectedException
 
-import static org.fest.assertions.api.Assertions.*
+import static org.assertj.core.api.Assertions.assertThat
 
 class RobolectricPluginTest {
     @Rule
@@ -60,7 +59,12 @@ class RobolectricPluginTest {
     @Test
     public void createsATestTaskForTheProdDebugLibVariant() {
         Project project = evaluatableLibraryProject()
-        project.android { productFlavors { prod {}; beta {} } }
+        project.android {
+            productFlavors {
+                prod
+                beta
+            }
+        }
         project.evaluate()
 
         assertThat(project.tasks.testProdDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
@@ -69,7 +73,12 @@ class RobolectricPluginTest {
     @Test
     public void createsATestTaskForTheProdDebugAppVariant() {
         Project project = evaluatableProject()
-        project.android { productFlavors { prod {}; beta {} } }
+        project.android {
+            productFlavors {
+                prod
+                beta
+            }
+        }
         project.evaluate()
 
         assertThat(project.tasks.testProdDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
@@ -123,7 +132,9 @@ class RobolectricPluginTest {
     @Test
     public void supportsSettingAnExcludePattern_viaTheAndroidTestExtension() {
         Project project = evaluatableProject()
-        project.robolectric { exclude "**/lame_tests/**" }
+        project.robolectric {
+            exclude "**/lame_tests/**"
+        }
         project.evaluate()
 
         assertThat(project.tasks.testDebug.getExcludes().contains("**/lame_tests/**")).isTrue()
@@ -132,7 +143,9 @@ class RobolectricPluginTest {
     @Test
     public void supportsAddingJvmArgs_viaTheAndroidTestExtension() {
         Project project = evaluatableProject()
-        project.robolectric { jvmArgs "-XX:TestArgument0", "-XX:TestArgument1" }
+        project.robolectric {
+            jvmArgs "-XX:TestArgument0", "-XX:TestArgument1"
+        }
         project.evaluate()
 
         assertThat(project.tasks.testDebug.getJvmArgs()).contains("-XX:TestArgument0")
@@ -142,7 +155,9 @@ class RobolectricPluginTest {
     @Test
     public void supportsAddingMaxHeapSize_viaTheAndroidTestExtension() {
         Project project = evaluatableProject()
-        project.robolectric { maxHeapSize = "1024m" }
+        project.robolectric {
+            maxHeapSize = "1024m"
+        }
         project.evaluate()
 
         assertThat(project.tasks.testDebug.getMaxHeapSize()).isEqualTo("1024m")
@@ -151,7 +166,9 @@ class RobolectricPluginTest {
     @Test
     public void supportsAddingMaxParallelForks_viaTheAndroidTestExtension() {
         Project project = evaluatableProject()
-        project.robolectric { maxParallelForks = 4 }
+        project.robolectric {
+            maxParallelForks = 4
+        }
         project.evaluate()
 
         assertThat(project.tasks.testDebug.getMaxParallelForks()).isEqualTo(4)
@@ -171,7 +188,9 @@ class RobolectricPluginTest {
 
         thrown.expect(IllegalArgumentException.class)
         thrown.expectMessage("Cannot set maxParallelForks to a value less than 1.")
-        project.robolectric { maxParallelForks = 0 }
+        project.robolectric {
+            maxParallelForks = 0
+        }
     }
 
     @Test
@@ -194,7 +213,9 @@ class RobolectricPluginTest {
     @Test
     public void setForkEveryToZero_whenConfiguredNull_viaTheAndroidTestExtension() {
         Project project = evaluatableProject()
-        project.robolectric { forkEvery = null }
+        project.robolectric {
+            forkEvery = null
+        }
         project.evaluate()
 
         assertThat(project.tasks.testDebug.getForkEvery()).isEqualTo(0)
@@ -206,7 +227,9 @@ class RobolectricPluginTest {
 
         thrown.expect(IllegalArgumentException.class)
         thrown.expectMessage("Cannot set forkEvery to a value less than 0.")
-        project.robolectric { forkEvery = -1 }
+        project.robolectric {
+            forkEvery = -1
+        }
     }
 
     @Test
@@ -227,7 +250,9 @@ class RobolectricPluginTest {
     @Test
     public void supportsIngoreFailures() {
         Project project = evaluatableProject()
-        project.robolectric { ignoreFailures true }
+        project.robolectric {
+            ignoreFailures true
+        }
         project.evaluate()
 
         assertThat(project.tasks.testDebug.ignoreFailures).isTrue()
@@ -236,7 +261,12 @@ class RobolectricPluginTest {
     @Test
     public void dumpsAllTestClassFilesAndResourcesIntoRespectiveFlavorDirectory() {
         Project project = evaluatableProject()
-        project.android { productFlavors { prod {}; beta {} } }
+        project.android {
+            productFlavors {
+                prod
+                beta
+            }
+        }
         project.evaluate()
 
         def expectedProdFlavorDestination = project.files("$project.buildDir/test-classes/prod/debug").singleFile
@@ -247,11 +277,20 @@ class RobolectricPluginTest {
         assertThat(project.tasks.processTestBetaDebugResources.destinationDir).isEqualTo(expectedBetaFlavorDestination)
     }
 
-    @Test @Ignore
-    public void parseInstrumentTestCompile_androidGradle_0_13_2() {
-        String androidGradleTool = "com.android.tools.build:gradle:0.13.2"
-        String configurationName = "androidTestCompile"
-        parseTestCompileDependencyWithAndroidGradle(androidGradleTool, configurationName)
+    @Test
+    public void ensureJarDependenciesOnClasspath() {
+        Project project = evaluatableProject()
+        project.repositories {
+            mavenCentral()
+        }
+        project.dependencies {
+            androidTestCompile 'junit:junit:4.8'
+        }
+        project.evaluate()
+
+        assertThat(project.tasks.compileTestDebugJava.classpath.files.find {
+            it.absolutePath.contains("junit${File.separator}junit${File.separator}4.8")
+        }).isNotNull()
     }
 
     @Test
@@ -265,66 +304,75 @@ class RobolectricPluginTest {
         }
         project.evaluate()
 
-        assertThat(project.tasks.compileTestDebugJava.classpath).contains(project.file('build/intermediates/exploded-aar/com.squareup.assertj/assertj-android/1.0.0/classes.jar'))
+        assertThat(project.tasks.compileTestDebugJava.classpath.files.find {
+            it.absolutePath.contains("com.squareup.assertj${File.separator}assertj-android${File.separator}1.0.0${File.separator}classes.jar")
+        }).isNotNull()
     }
 
-    private Project evaluatableProject() throws Exception {
-        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build();
-        project.apply plugin: 'com.android.application'
-        project.apply plugin: 'robolectric'
-        project.android {
-            compileSdkVersion 20
-            buildToolsVersion '20.0.0'
+    @Test
+    public void checkAndroidVersionTest() {
+        assertThat(RobolectricPlugin.checkAndroidVersion('0.6.0')).isFalse()
+        assertThat(RobolectricPlugin.checkAndroidVersion('0.8.0')).isFalse()
+        assertThat(RobolectricPlugin.checkAndroidVersion('0.12.+')).isFalse()
+        assertThat(RobolectricPlugin.checkAndroidVersion('0.13.1')).isFalse()
+
+        assertThat(RobolectricPlugin.checkAndroidVersion('0.14.+')).isTrue()
+        assertThat(RobolectricPlugin.checkAndroidVersion('0.14.0')).isTrue()
+        assertThat(RobolectricPlugin.checkAndroidVersion('1.0.0-rc1')).isTrue()
+    }
+
+    @Test(expected = ProjectConfigurationException.class)
+    public void pluginFailsWithOutdatedAndroidPlugin() {
+        Project project = evaluatableProjectWithAndroidVersion('com.android.tools.build:gradle:0.12.0')
+        project.evaluate()
+    }
+
+    @Test
+    public void pluginAcceptsOutdatedAndroidPluginByExtension() {
+        Project project = evaluatableProjectWithAndroidVersion('com.android.tools.build:gradle:0.12.0')
+        project.robolectric {
+            ignoreVersionCheck true
         }
-        return project
+        project.evaluate()
     }
 
-    private Project evaluatableLibraryProject() throws Exception {
-        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build();
-        project.apply plugin: 'com.android.library'
-        project.apply plugin: 'robolectric'
-        project.android {
-            compileSdkVersion 20
-            buildToolsVersion '20.0.0'
-        }
-        return project
+    @Test
+    public void pluginAcceptsSupportedAndroidPlugin() {
+        Project project = evaluatableProjectWithAndroidVersion('com.android.tools.build:gradle:0.14.0')
+        project.evaluate()
     }
 
-    private void parseTestCompileDependencyWithAndroidGradle(String androidGradleTool, String configurationName) {
-        Project project = ProjectBuilder.builder().build()
-        project.buildscript {
+    private Project evaluatableProject() {
+        return evaluatableProjectWithPluginAndBuildscript('com.android.application', null)
+    }
+
+    private Project evaluatableLibraryProject() {
+        return evaluatableProjectWithPluginAndBuildscript('com.android.library', null)
+    }
+
+    private Project evaluatableProjectWithAndroidVersion(String androidVersion) {
+        return evaluatableProjectWithPluginAndBuildscript('com.android.application', {
             repositories {
                 mavenCentral()
             }
             dependencies {
-                classpath androidGradleTool
+                classpath androidVersion
             }
-        }
-        project.repositories {
-            mavenCentral()
-        }
+        })
+    }
 
-        project.apply plugin: 'com.android.application'
+    private Project evaluatableProjectWithPluginAndBuildscript(String plugin, Closure buildscript) {
+        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/fixtures/android_app")).build()
+        if (buildscript) {
+            project.buildscript buildscript
+        }
+        project.apply plugin: plugin
         project.apply plugin: 'robolectric'
         project.android {
-            compileSdkVersion 20
-            buildToolsVersion '20.0.0'
+            compileSdkVersion 21
+            buildToolsVersion '21.1.1'
         }
-
-        project.evaluate()
-        project.dependencies.add(configurationName, 'junit:junit:4.8')
-
-        Set<Task> testTaskSet = project.getTasksByName("test", false)
-        assertThat(testTaskSet.size()).isEqualTo(1)
-
-        Set<Task> compileTestDebugJavaTaskSet = project.getTasksByName("compileTestDebugJava", false)
-        assertThat(compileTestDebugJavaTaskSet.size()).isEqualTo(1)
-
-        Task compileDebugJavaTask = compileTestDebugJavaTaskSet.iterator().next()
-        String filePathComponent = "junit" + File.separator + "junit" + File.separator + "4.8"
-        boolean found = compileDebugJavaTask.classpath.getFiles().find { f ->
-            f.toString().contains(filePathComponent)
-        }
-        assertThat(found).isTrue()
+        return project
     }
+
 }

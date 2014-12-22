@@ -1,20 +1,22 @@
 package org.robolectric.gradle
 
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
-import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.LibraryPlugin
 
 class RobolectricPlugin implements Plugin<Project> {
+    private static final String[] SUPPORTED_ANDROID_VERSIONS = ['0.14.', '1.0.']
     private static final String TEST_TASK_NAME = 'test'
     private static final String TEST_CLASSES_DIR = 'test-classes'
     private static final String TEST_REPORT_DIR = 'test-report'
     private static final String RELEASE_VARIANT = 'release'
 
+    @Override
     void apply(Project project) {
         def extension = project.extensions.create('robolectric', RobolectricTestExtension)
         def log = project.logger
@@ -38,6 +40,17 @@ class RobolectricPlugin implements Plugin<Project> {
         project.tasks.check.dependsOn testTask
 
         config.variants.all { variant ->
+            def androidGradlePlugin = project.buildscript.configurations.classpath.dependencies.find {
+                it.group != null && it.group.equals('com.android.tools.build') && it.name.equals('gradle')
+            }
+            if (androidGradlePlugin != null && !checkAndroidVersion(androidGradlePlugin.version)) {
+                if (extension.ignoreVersionCheck) {
+                    log.warn("The Android Gradle plugin ${androidGradlePlugin.version} is not supported.")
+                } else {
+                    throw new IllegalStateException("The Android Gradle plugin ${androidGradlePlugin.version} is not supported.")
+                }
+            }
+
             if (variant.buildType.name.equals(RELEASE_VARIANT)) {
                 log.debug("Skipping release build type.")
                 return
@@ -79,8 +92,8 @@ class RobolectricPlugin implements Plugin<Project> {
             def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
             def testRunClasspath = testCompileClasspath.plus testDestinationDir
 
-            variationSources.java.setSrcDirs config.getSourceDirs("java", projectFlavorNames)
-            variationSources.resources.setSrcDirs config.getSourceDirs("res", projectFlavorNames)
+            variationSources.java.setSrcDirs config.getSourceDirs(["java"], projectFlavorNames)
+            variationSources.resources.setSrcDirs config.getSourceDirs(["res", "resources"], projectFlavorNames)
 
             log.debug("----------------------------------------")
             log.debug("build type name: $buildTypeName")
@@ -160,7 +173,7 @@ class RobolectricPlugin implements Plugin<Project> {
             testRunTask.setMaxParallelForks(extension.maxParallelForks)
             testRunTask.setForkEvery(extension.forkEvery)
             testRunTask.setMaxHeapSize(extension.maxHeapSize)
-            testRunTask.jvmArgs(extension.jvmArgs)
+            testRunTask.setJvmArgs(extension.jvmArgs)
 
             // Set afterTest closure
             if (extension.afterTest != null) {
@@ -178,10 +191,20 @@ class RobolectricPlugin implements Plugin<Project> {
         }
     }
 
+    static boolean checkAndroidVersion(String version) {
+        for (String supportedVersion : SUPPORTED_ANDROID_VERSIONS) {
+            if (version.startsWith(supportedVersion)) {
+                return true
+            }
+        }
+
+        return false
+    }
+
     class PluginConfiguration {
-        private final Project project;
-        private final boolean hasAppPlugin;
-        private final boolean hasLibPlugin;
+        private final Project project
+        private final boolean hasAppPlugin
+        private final boolean hasLibPlugin
 
         PluginConfiguration(Project project) {
             this.project = project
@@ -205,14 +228,16 @@ class RobolectricPlugin implements Plugin<Project> {
             return project.plugins.find { p -> p instanceof AppPlugin }
         }
 
-        def getSourceDirs(String sourceType, List<String> projectFlavorNames) {
+        def getSourceDirs(List<String> sourceTypes, List<String> projectFlavorNames) {
             def dirs = []
-            project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
-                dirs.add(testDir)
-            }
-            projectFlavorNames.each { flavor ->
-                if (flavor) {
-                    dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
+            sourceTypes.each { sourceType ->
+                project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
+                    dirs.add(testDir)
+                }
+                projectFlavorNames.each { flavor ->
+                    if (flavor) {
+                        dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
+                    }
                 }
             }
             return dirs
