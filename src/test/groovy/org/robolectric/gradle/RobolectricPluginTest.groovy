@@ -104,16 +104,20 @@ class RobolectricPluginTest {
     @Test
     public void shouldNeverMixSrcDirsOfVariant() {
         Project project = evaluatableProject()
-        project.android { productFlavors { prod {}; beta{} } }
+        project.android { productFlavors { prod {}; beta{}; alpha{} } }
         project.android.sourceSets.androidTestProd.java.srcDirs = ['customTestFolder/src']
         project.evaluate()
         assertThat(project.tasks.testProdDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
         assertThat(project.tasks.testBetaDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
+        assertThat(project.tasks.testAlphaDebug).isInstanceOf(org.gradle.api.tasks.testing.Test)
         assertThat(project.tasks.compileTestProdDebugJava.source.files)
                 .containsOnly(project.file("customTestFolder/src/SomeTest.java"),
                           project.file("src/androidTest/java/SomeTest.java"))
         assertThat(project.tasks.compileTestBetaDebugJava.source.files)
-                .doesNotContain(project.file("customTestFolder/src/SomeTest.java"))
+                .containsOnly(project.file("src/androidTest/java/SomeTest.java"))
+        assertThat(project.tasks.compileTestAlphaDebugJava.source.files)
+                .containsOnly(project.file("src/androidTest/java/SomeTest.java"),
+                    project.file("src/androidTestAlpha/java/SomeTest.java"))
     }
 
     @Test
