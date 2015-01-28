@@ -89,11 +89,11 @@ class RobolectricPlugin implements Plugin<Project> {
             }
 
             def variationSources = javaConvention.sourceSets.create "$TEST_TASK_NAME$variationName"
-            def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR")
+            def testDestinationDir = project.files("$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
             def testRunClasspath = testCompileClasspath.plus testDestinationDir
 
-            variationSources.java.setSrcDirs config.getSourceDirs(["java"], projectFlavorNames)
-            variationSources.resources.setSrcDirs config.getSourceDirs(["res", "resources"], projectFlavorNames)
+            variationSources.java.setSrcDirs config.getSourceDirs(["java"], projectFlavorName)
+            variationSources.resources.setSrcDirs config.getSourceDirs(["res", "resources"], projectFlavorName)
 
             log.debug("----------------------------------------")
             log.debug("build type name: $buildTypeName")
@@ -228,16 +228,14 @@ class RobolectricPlugin implements Plugin<Project> {
             return project.plugins.find { p -> p instanceof AppPlugin }
         }
 
-        def getSourceDirs(List<String> sourceTypes, List<String> projectFlavorNames) {
+        def getSourceDirs(List<String> sourceTypes, String projectFlavorName) {
             def dirs = []
             sourceTypes.each { sourceType ->
                 project.android.sourceSets.androidTest[sourceType].srcDirs.each { testDir ->
                     dirs.add(testDir)
                 }
-                projectFlavorNames.each { flavor ->
-                    if (flavor) {
-                        dirs.addAll(project.android.sourceSets["androidTest$flavor"][sourceType].srcDirs)
-                    }
+                if (projectFlavorName) {
+                    dirs.addAll(project.android.sourceSets["androidTest$projectFlavorName"][sourceType].srcDirs)
                 }
             }
             return dirs
