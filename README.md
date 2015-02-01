@@ -6,7 +6,7 @@ A Gradle plugin which enables Robolectric tests.
 
 ## Important Note
 
-This document describes the state of the latest development version of this plugin.  For documentation of the latest release, see [the README.md for that release](https://github.com/robolectric/robolectric-gradle-plugin/blob/0.13.2/README.md).
+This document describes the state of the latest development version of this plugin.  For documentation of the latest release, see [the README.md for that release](https://github.com/robolectric/robolectric-gradle-plugin/blob/0.14.1/README.md).
 
 ## Compatibility
 
@@ -22,7 +22,7 @@ deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.go
 
 Add the plugin to your `buildscript`'s `dependencies` section:
 ```groovy
-classpath 'org.robolectric:robolectric-gradle-plugin:0.14.+'
+classpath 'org.robolectric:robolectric-gradle-plugin:0.14.1'
 ```
 
 Apply the `robolectric` plugin:
@@ -32,7 +32,13 @@ apply plugin: 'robolectric'
 
 Add test-only dependencies using the `androidTestCompile` configuration:
 ```groovy
-androidTestCompile 'org.robolectric:robolectric:2.3'
+androidTestCompile('junit:junit:4.12') {
+	exclude module: 'hamcrest-core'
+}
+androidTestCompile('org.robolectric:robolectric:2.4') {
+	exclude group: 'commons-logging', module: 'commons-logging'
+	exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+}
 ```
 
 Place your tests in `src/test/java` or `src/androidTest/java` You can also add per-build type and per-flavor tests by using the same folder naming conventions (e.g., `src/testPaid/java`, `src/testDebug/java`).
@@ -50,7 +56,7 @@ robolectric {
     // configure max heap size of the test JVM
     maxHeapSize = '2048m'
 
-    // configure the test JVM arguments
+    // configure the test JVM arguments - Does not apply to Java 8
     jvmArgs '-XX:MaxPermSize=512m', '-XX:-UseSplitVerifier'
     
     // Specify max number of processes (default is 1)
