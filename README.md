@@ -32,9 +32,7 @@ apply plugin: 'robolectric'
 
 Add test-only dependencies using the `androidTestCompile` configuration:
 ```groovy
-androidTestCompile('junit:junit:4.12') {
-	exclude module: 'hamcrest-core'
-}
+androidTestCompile 'junit:junit:4.12'
 androidTestCompile('org.robolectric:robolectric:2.4') {
 	exclude group: 'commons-logging', module: 'commons-logging'
 	exclude group: 'org.apache.httpcomponents', module: 'httpclient'
