@@ -1,6 +1,6 @@
 package org.robolectric.gradle
 
-class RobolectricTestExtension {
+class RobolectricExtension {
     private long forkEvery
     private int maxParallelForks = 1
     private final List<String> jvmArgs = new LinkedList<>()
