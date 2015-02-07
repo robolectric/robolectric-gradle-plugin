@@ -148,9 +148,9 @@ class RobolectricPlugin implements Plugin<Project> {
             testRunTask.reports.html.destination =
                     project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
             testRunTask.doFirst {
-                // Prepend the Android runtime onto the classpath.
-                def androidRuntime = project.files(config.plugin.getBootClasspath().join(File.pathSeparator))
-                testRunTask.classpath = testRunClasspath.plus project.files(androidRuntime)
+                // Append the Android runtime onto the classpath.
+                def androidRuntime = project.files(config.plugin.getBootClasspath())
+                testRunTask.classpath = testRunClasspath.plus androidRuntime
                 log.debug("jUnit classpath: $testRunTask.classpath.asPath")
             }
 
