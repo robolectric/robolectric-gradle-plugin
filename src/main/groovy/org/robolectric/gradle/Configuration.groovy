@@ -3,11 +3,13 @@ package org.robolectric.gradle
 import org.gradle.api.Project
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.api.BaseVariant
 
 class Configuration {
     private final Project project
     private final boolean hasAppPlugin
     private final boolean hasLibPlugin
+    private static final String DEBUG_VARIANT_NAME = "debug"
     private static final String[] SUPPORTED_ANDROID_VERSIONS = ['1.1.']
 
     Configuration(Project project) {
@@ -31,15 +33,27 @@ class Configuration {
     }
 
     File getAndroidAssets() {
-        return new File(project.getProjectDir(), "build/intermediates/assets/debug")
+        def variant = getVariant(DEBUG_VARIANT_NAME)
+        return variant != null ? variant.mergeAssets.outputDir : null
     }
 
     File getAndroidResources() {
-        return new File(project.getProjectDir(), "build/intermediates/res/debug")
+        def variant = getVariant(DEBUG_VARIANT_NAME)
+        return variant != null ? variant.mergeResources.outputDir : null
     }
 
     File getAndroidManifest() {
-        return new File(project.getProjectDir(), "build/intermediates/manifests/full/debug/AndroidManifest.xml");
+        def variant = getVariant(DEBUG_VARIANT_NAME)
+        return variant != null ? variant.outputs.first().processManifest.manifestOutputFile : null
+    }
+
+    String getAndroidPackageName() {
+        return project.android.defaultConfig.applicationId
+    }
+
+    private BaseVariant getVariant(String name) {
+        def variants = hasAppPlugin ? project.android.applicationVariants : project.android.libraryVariants
+        return variants.find { variant -> return variant.name.equals(name) } as BaseVariant
     }
 
     private static boolean checkVersion(String version) {

@@ -28,11 +28,7 @@ class RobolectricPlugin implements Plugin<Project> {
                 task.systemProperty("android.assets", configuration.androidAssets)
                 task.systemProperty("android.manifest", configuration.androidManifest)
                 task.systemProperty("android.resources", configuration.androidResources)
-
-                def applicationId = project.android.defaultConfig.applicationId
-                if (applicationId != null) {
-                    task.systemProperty("android.package", applicationId)
-                }
+                task.systemProperty("android.package", configuration.androidPackageName)
 
                 // Set extension properties
                 task.setJvmArgs(extension.jvmArgs)
@@ -49,6 +45,7 @@ class RobolectricPlugin implements Plugin<Project> {
                 project.logger.info("Robolectric assets: " + configuration.androidAssets)
                 project.logger.info("Robolectric manifest: " + configuration.androidManifest)
                 project.logger.info("Robolectric resources: " + configuration.androidResources)
+                project.logger.info("Robolectric package name: " + configuration.androidPackageName)
             }
         }
     }
