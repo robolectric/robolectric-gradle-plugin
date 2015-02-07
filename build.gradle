@@ -4,15 +4,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.1.1'
+        classpath "com.bmuschko:gradle-nexus-plugin:2.1.1"
     }
 }
 
-apply plugin: 'groovy'
-apply plugin: 'com.bmuschko.nexus'
+apply plugin: "groovy"
+apply plugin: "com.bmuschko.nexus"
 
-group = 'org.robolectric'
-version = '0.14.2-SNAPSHOT'
+group = "org.robolectric"
+version = "1.0.0-SNAPSHOT"
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -24,56 +24,36 @@ dependencies {
 
     compile gradleApi()
     compile localGroovy()
-    compile 'com.android.tools.build:gradle:1.0.0-rc1'
+    compile "com.android.tools.build:gradle:1.0.0-rc1"
 
-    testCompile 'junit:junit:4.10'
-    testCompile 'org.assertj:assertj-core:1.7.0'
+    testCompile "junit:junit:4.10"
+    testCompile "org.assertj:assertj-core:1.7.0"
 }
 
 modifyPom {
     project {
-        name 'Robolectric Gradle Plugin'
+        name "Robolectric Gradle Plugin"
         description "A Gradle plugin which enables Robolectric tests for Android."
-        url 'https://github.com/robolectric/robolectric-gradle-plugin'
-        inceptionYear '2013'
+        url "https://github.com/robolectric/robolectric-gradle-plugin"
+        inceptionYear "2013"
 
         scm {
-            url 'https://github.com/robolectric/robolectric-gradle-plugin'
-            connection 'scm:git:git://github.com/robolectric/robolectric-gradle-plugin.git'
-            developerConnection 'scm:git:ssh://git@github.com/robolectric/robolectric-gradle-plugin.git'
+            url "https://github.com/robolectric/robolectric-gradle-plugin"
+            connection "scm:git:git://github.com/robolectric/robolectric-gradle-plugin.git"
+            developerConnection "scm:git:ssh://git@github.com/robolectric/robolectric-gradle-plugin.git"
         }
 
         licenses {
             license {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                distribution 'repo'
+                name "The Apache Software License, Version 2.0"
+                url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution "repo"
             }
         }
 
         organization {
-            name 'Robolectric'
-            url 'http://robolectric.org'
-        }
-
-        developers {
-            developer {
-                id 'mike'
-                name 'Mike Grafton'
-                email 'mike@pivotallabs.com'
-            }
-
-            developer {
-                id 'erich'
-                name 'Erich Douglass'
-                email 'erich@pivotallabs.com'
-            }
-
-            developer {
-                id 'terry'
-                name 'Terry Chen'
-                email 'terry@pivotallabs.com'
-            }
+            name "Robolectric"
+            url "http://robolectric.org"
         }
     }
 }
