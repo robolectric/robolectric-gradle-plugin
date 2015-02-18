@@ -24,7 +24,7 @@ dependencies {
 
     compile gradleApi()
     compile localGroovy()
-    compile "com.android.tools.build:gradle:1.0.0-rc1"
+    compile "com.android.tools.build:gradle:1.1.0-rc1"
 
     testCompile "junit:junit:4.10"
     testCompile "org.assertj:assertj-core:1.7.0"

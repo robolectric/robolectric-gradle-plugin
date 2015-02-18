@@ -2,8 +2,11 @@ package org.robolectric.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.testing.Test
+import com.android.build.gradle.api.BaseVariant
 
+/**
+ * Robolectric gradle plugin.
+ */
 class RobolectricPlugin implements Plugin<Project> {
 
     @Override
@@ -15,20 +18,21 @@ class RobolectricPlugin implements Plugin<Project> {
         def configuration = new Configuration(project)
         project.afterEvaluate {
 
-            // Check the android plugin version
+            // Verify the plugin version
             if (!extension.ignoreVersionCheck) {
                 configuration.validate()
             }
 
-            // Configure the test run tasks
-            def tasks = project.tasks.withType(Test)
-            tasks.each {task ->
+            // Configure the test tasks
+            for (String name : configuration.getVariantNames()) {
+                def variant = configuration.getVariant(name)
+                def task = project.tasks.findByName("test${variant.name.capitalize()}")
 
                 // Set RobolectricTestRunner properties
-                task.systemProperty("android.assets", configuration.androidAssets)
-                task.systemProperty("android.manifest", configuration.androidManifest)
-                task.systemProperty("android.resources", configuration.androidResources)
-                task.systemProperty("android.package", configuration.androidPackageName)
+                task.systemProperty("android.assets", getAssets(variant))
+                task.systemProperty("android.manifest", getManifestFile(variant))
+                task.systemProperty("android.resources", getResources(variant))
+                task.systemProperty("android.package", getPackageName(project))
 
                 // Set extension properties
                 task.setJvmArgs(extension.jvmArgs)
@@ -41,12 +45,28 @@ class RobolectricPlugin implements Plugin<Project> {
                     task.afterTest(extension.afterTest)
                 }
 
-                project.logger.info("Configuring task: " + task.name)
-                project.logger.info("Robolectric assets: " + configuration.androidAssets)
-                project.logger.info("Robolectric manifest: " + configuration.androidManifest)
-                project.logger.info("Robolectric resources: " + configuration.androidResources)
-                project.logger.info("Robolectric package name: " + configuration.androidPackageName)
+                project.logger.info("Configuring task: ${task.name}")
+                project.logger.info("Robolectric assets: ${getAssets(variant)}")
+                project.logger.info("Robolectric manifest: ${getManifestFile(variant)}")
+                project.logger.info("Robolectric resources: ${getResources(variant)}")
+                project.logger.info("Robolectric package name: ${getPackageName(project)}")
             }
         }
+    }
+
+    private static String getPackageName(Project project) {
+        return project.android.defaultConfig.applicationId
+    }
+
+    private static File getAssets(BaseVariant variant) {
+        return variant.mergeAssets.outputDir
+    }
+
+    private static File getResources(BaseVariant variant) {
+        return variant.mergeResources.outputDir
+    }
+
+    private static File getManifestFile(BaseVariant variant) {
+        return variant.outputs.first().processManifest.manifestOutputFile
     }
 }

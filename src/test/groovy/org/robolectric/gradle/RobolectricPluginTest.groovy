@@ -3,6 +3,7 @@ package org.robolectric.gradle
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
+import org.gradle.api.Task
 import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
 import org.gradle.testfixtures.ProjectBuilder
@@ -15,48 +16,48 @@ class RobolectricPluginTest {
     public ExpectedException thrown = ExpectedException.none()
 
     @Test
-    public void pluginDetectsLibraryPlugin() {
+    public void plugin_detectsLibraryPlugin() {
         final Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'com.android.library'
-        project.apply plugin: 'robolectric'
+        project.apply plugin: "com.android.library"
+        project.apply plugin: "robolectric"
     }
 
     @Test
-    public void pluginDetectsExtendedLibraryPlugin() {
+    public void plugin_detectsExtendedLibraryPlugin() {
         final Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'extended-android-library'
-        project.apply plugin: 'robolectric'
+        project.apply plugin: "extended-android-library"
+        project.apply plugin: "robolectric"
     }
 
     @Test(expected = PluginApplicationException.class)
-    public void pluginFailsWithoutAndroidPlugin() {
+    public void plugin_failsWithoutAndroidPlugin() {
         final Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'robolectric'
+        project.apply plugin: "robolectric"
     }
 
     @Test
-    public void pluginDetectsAppPlugin() {
+    public void plugin_detectsAppPlugin() {
         final Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'com.android.application'
-        project.apply plugin: 'robolectric'
+        project.apply plugin: "com.android.application"
+        project.apply plugin: "robolectric"
     }
 
     @Test
-    public void pluginDetectsExtendedAppPlugin() {
+    public void plugin_detectsExtendedAppPlugin() {
         final Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'extended-android'
-        project.apply plugin: 'robolectric'
+        project.apply plugin: "extended-android"
+        project.apply plugin: "robolectric"
     }
 
     @Test(expected = ProjectConfigurationException.class)
-    public void pluginFailsWithOutdatedAndroidPlugin() {
-        final Project project = createProject('com.android.tools.build:gradle:0.12.0')
+    public void plugin_failsWithOutdatedAndroidPlugin() {
+        final Project project = createProject("com.android.tools.build:gradle:0.12.0")
         project.evaluate()
     }
 
     @Test
-    public void pluginAcceptsOutdatedAndroidPluginByExtension() {
-        final Project project = createProject('com.android.tools.build:gradle:0.12.0')
+    public void plugin_acceptsOutdatedAndroidPluginByExtension() {
+        final Project project = createProject("com.android.tools.build:gradle:0.12.0")
         project.robolectric {
             ignoreVersionCheck true
         }
@@ -64,9 +65,65 @@ class RobolectricPluginTest {
     }
 
     @Test
-    public void pluginAcceptsSupportedAndroidPlugin() {
-        final Project project = createProject('com.android.tools.build:gradle:1.1.0-rc1')
+    public void plugin_acceptsSupportedAndroidPlugin() {
+        final Project project = createProject("com.android.tools.build:gradle:1.1.0-rc1")
         project.evaluate()
+    }
+
+    @Test
+    public void plugin_configuresTestTasks() {
+        final Project project = createProject()
+        project.evaluate()
+
+        def testDebug = project.tasks.getByName("testDebug")
+        assertThat(getPackage(testDebug)).isEqualTo("com.example")
+        assertThat(getAssetPath(testDebug)).endsWith("build/intermediates/assets/debug")
+        assertThat(getResourcePath(testDebug)).endsWith("build/intermediates/res/debug")
+        assertThat(getManifestPath(testDebug)).endsWith("build/intermediates/manifests/full/debug/AndroidManifest.xml")
+
+        def testRelease = project.tasks.getByName("testRelease")
+        assertThat(getPackage(testRelease)).isEqualTo("com.example")
+        assertThat(getAssetPath(testRelease)).endsWith("build/intermediates/assets/release")
+        assertThat(getResourcePath(testRelease)).endsWith("build/intermediates/res/release")
+        assertThat(getManifestPath(testRelease)).endsWith("build/intermediates/manifests/full/release/AndroidManifest.xml")
+    }
+
+    @Test
+    public void plugin_withFlavors_configuresTestTasks() {
+        final Project project = createProject()
+        project.android {
+            productFlavors {
+                flavor1 {
+                }
+                flavor2 {
+                }
+            }
+        }
+        project.evaluate()
+
+        def testFlavor1Debug = project.tasks.getByName("testFlavor1Debug")
+        assertThat(getPackage(testFlavor1Debug)).isEqualTo("com.example")
+        assertThat(getAssetPath(testFlavor1Debug)).endsWith("build/intermediates/assets/flavor1/debug")
+        assertThat(getResourcePath(testFlavor1Debug)).endsWith("build/intermediates/res/flavor1/debug")
+        assertThat(getManifestPath(testFlavor1Debug)).endsWith("build/intermediates/manifests/full/flavor1/debug/AndroidManifest.xml")
+
+        def testFlavor1Release = project.tasks.getByName("testFlavor1Release")
+        assertThat(getPackage(testFlavor1Release)).isEqualTo("com.example")
+        assertThat(getAssetPath(testFlavor1Release)).endsWith("build/intermediates/assets/flavor1/release")
+        assertThat(getResourcePath(testFlavor1Release)).endsWith("build/intermediates/res/flavor1/release")
+        assertThat(getManifestPath(testFlavor1Release)).endsWith("build/intermediates/manifests/full/flavor1/release/AndroidManifest.xml")
+
+        def testFlavor2Debug = project.tasks.getByName("testFlavor2Debug")
+        assertThat(getPackage(testFlavor2Debug)).isEqualTo("com.example")
+        assertThat(getAssetPath(testFlavor2Debug)).endsWith("build/intermediates/assets/flavor2/debug")
+        assertThat(getResourcePath(testFlavor2Debug)).endsWith("build/intermediates/res/flavor2/debug")
+        assertThat(getManifestPath(testFlavor2Debug)).endsWith("build/intermediates/manifests/full/flavor2/debug/AndroidManifest.xml")
+
+        def testFlavor2Release = project.tasks.getByName("testFlavor2Release")
+        assertThat(getPackage(testFlavor2Release)).isEqualTo("com.example")
+        assertThat(getAssetPath(testFlavor2Release)).endsWith("build/intermediates/assets/flavor2/release")
+        assertThat(getResourcePath(testFlavor2Release)).endsWith("build/intermediates/res/flavor2/release")
+        assertThat(getManifestPath(testFlavor2Release)).endsWith("build/intermediates/manifests/full/flavor2/release/AndroidManifest.xml")
     }
 
     @Test
@@ -219,11 +276,11 @@ class RobolectricPluginTest {
     }
 
     private static Project createProject() {
-        return createProject('com.android.application', null)
+        return createProject("com.android.application", null)
     }
 
     private static Project createProject(String androidVersion) {
-        return createProject('com.android.application', {
+        return createProject("com.android.application", {
             repositories {
                 mavenCentral()
             }
@@ -239,11 +296,31 @@ class RobolectricPluginTest {
             project.buildscript buildscript
         }
         project.apply plugin: plugin
-        project.apply plugin: 'robolectric'
+        project.apply plugin: "robolectric"
         project.android {
             compileSdkVersion 21
-            buildToolsVersion '21.1.1'
+            buildToolsVersion "21.1.1"
+
+            defaultConfig {
+                applicationId "com.example"
+            }
         }
         return project
+    }
+
+    private static String getPackage(Task testDebug) {
+        return testDebug.getSystemProperties().get("android.package")
+    }
+
+    private static String getAssetPath(Task task) {
+        return task.getSystemProperties().get("android.assets").getPath()
+    }
+
+    private static String getManifestPath(Task task) {
+        return task.getSystemProperties().get("android.manifest").getPath()
+    }
+
+    private static String getResourcePath(Task task) {
+        return task.getSystemProperties().get("android.resources").getPath()
     }
 }
