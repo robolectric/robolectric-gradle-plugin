@@ -5,13 +5,21 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.api.BaseVariant
 
+/**
+ * Class used to obtain information about the project configuration.
+ */
 class Configuration {
     private final Project project
     private final boolean hasAppPlugin
     private final boolean hasLibPlugin
-    private static final String DEBUG_VARIANT_NAME = "debug"
     private static final String[] SUPPORTED_ANDROID_VERSIONS = ['1.1.']
 
+    /**
+     * Class constructor.
+     *
+     * @param   project
+     *          Gradle project.
+     */
     Configuration(Project project) {
         this.project = project
         this.hasAppPlugin = project.plugins.find { p -> p instanceof AppPlugin }
@@ -22,6 +30,9 @@ class Configuration {
         }
     }
 
+    /**
+     * Verify that the version of the Android Gradle plugin used by this project is supported.
+     */
     void validate() {
         def androidGradlePlugin = project.buildscript.configurations.classpath.dependencies.find {
             it.group != null && it.group.equals('com.android.tools.build') && it.name.equals('gradle')
@@ -32,28 +43,43 @@ class Configuration {
         }
     }
 
-    File getAndroidAssets() {
-        def variant = getVariant(DEBUG_VARIANT_NAME)
-        return variant != null ? variant.mergeAssets.outputDir : null
+    /**
+     * Return the all variant names.
+     *
+     * @return  Collection of variant names.
+     */
+    Collection<String> getVariantNames() {
+        def rval = new ArrayList<String>()
+        for (String type : getBuildTypeNames()) {
+            def flavors = getFlavorNames()
+            if (flavors.isEmpty()) {
+                rval.add("${type}")
+            } else {
+                for (String flavor : flavors) {
+                    rval.add("${flavor}${type.capitalize()}")
+                }
+            }
+        }
+        return rval
     }
 
-    File getAndroidResources() {
-        def variant = getVariant(DEBUG_VARIANT_NAME)
-        return variant != null ? variant.mergeResources.outputDir : null
-    }
-
-    File getAndroidManifest() {
-        def variant = getVariant(DEBUG_VARIANT_NAME)
-        return variant != null ? variant.outputs.first().processManifest.manifestOutputFile : null
-    }
-
-    String getAndroidPackageName() {
-        return project.android.defaultConfig.applicationId
-    }
-
-    private BaseVariant getVariant(String name) {
+    /**
+     * Return the given variant.
+     *
+     * @param   name    Variant name.
+     * @return  The specified variant.
+     */
+    BaseVariant getVariant(String name) {
         def variants = hasAppPlugin ? project.android.applicationVariants : project.android.libraryVariants
         return variants.find { variant -> return variant.name.equals(name) } as BaseVariant
+    }
+
+    private Collection<String> getFlavorNames() {
+        return project.android.productFlavors.collect { flavor -> flavor.name as String }
+    }
+
+    private Collection<String> getBuildTypeNames() {
+        return project.android.buildTypes.collect { type -> type.name as String }
     }
 
     private static boolean checkVersion(String version) {
