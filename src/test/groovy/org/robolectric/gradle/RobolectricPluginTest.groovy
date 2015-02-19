@@ -66,7 +66,7 @@ class RobolectricPluginTest {
 
     @Test
     public void plugin_acceptsSupportedAndroidPlugin() {
-        final Project project = createProject("com.android.tools.build:gradle:1.1.0-rc1")
+        final Project project = createProject("com.android.tools.build:gradle:1.1.0")
         project.evaluate()
     }
 
