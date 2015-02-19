@@ -19,34 +19,34 @@ class RobolectricPluginTest {
     public void plugin_detectsLibraryPlugin() {
         final Project project = ProjectBuilder.builder().build()
         project.apply plugin: "com.android.library"
-        project.apply plugin: "robolectric"
+        project.apply plugin: "org.robolectric"
     }
 
     @Test
     public void plugin_detectsExtendedLibraryPlugin() {
         final Project project = ProjectBuilder.builder().build()
         project.apply plugin: "extended-android-library"
-        project.apply plugin: "robolectric"
+        project.apply plugin: "org.robolectric"
     }
 
     @Test(expected = PluginApplicationException.class)
     public void plugin_failsWithoutAndroidPlugin() {
         final Project project = ProjectBuilder.builder().build()
-        project.apply plugin: "robolectric"
+        project.apply plugin: "org.robolectric"
     }
 
     @Test
     public void plugin_detectsAppPlugin() {
         final Project project = ProjectBuilder.builder().build()
         project.apply plugin: "com.android.application"
-        project.apply plugin: "robolectric"
+        project.apply plugin: "org.robolectric"
     }
 
     @Test
     public void plugin_detectsExtendedAppPlugin() {
         final Project project = ProjectBuilder.builder().build()
         project.apply plugin: "extended-android"
-        project.apply plugin: "robolectric"
+        project.apply plugin: "org.robolectric"
     }
 
     @Test(expected = ProjectConfigurationException.class)
@@ -296,7 +296,7 @@ class RobolectricPluginTest {
             project.buildscript buildscript
         }
         project.apply plugin: plugin
-        project.apply plugin: "robolectric"
+        project.apply plugin: "org.robolectric"
         project.android {
             compileSdkVersion 21
             buildToolsVersion "21.1.1"
