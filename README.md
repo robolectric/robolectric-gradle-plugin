@@ -4,57 +4,47 @@
 
 A Gradle plugin which enables Robolectric tests.
 
-## Important Note
-
-This document describes the state of the latest development version of this plugin.  For documentation of the latest release, see [the README.md for that release](https://github.com/robolectric/robolectric-gradle-plugin/blob/0.14.1/README.md).
+This plugin piggy-backs on the unit testing support added in version 1.1.0 of the Android Gradle plugin and configures the test tasks to work correctly with Robolectric.
 
 ## Compatibility
 
-Currently compatible with version 0.14.x of the android gradle plugin.
+Currently compatible with version 1.1.0 of the Android Gradle plugin.
 
-## Getting Started
-
-If you are starting a new app, or want to try this plugin in the simplest possible environment, the easiest way to start is to use [deckard-gradle](https://github.com/robolectric/deckard-gradle).
-
-deckard-gradle illustrates how to run Robolectric and [Espresso](https://code.google.com/p/android-test-kit/wiki/Espresso) tests in IntelliJ, Android Studio or the command-line.
-
-## Basic Usage for JUnit / Robolectric
+## Basic Usage
 
 Add the plugin to your `buildscript`'s `dependencies` section:
+
 ```groovy
-classpath 'org.robolectric:robolectric-gradle-plugin:0.14.1'
+classpath 'org.robolectric:robolectric-gradle-plugin:1.0.0'
 ```
 
-Apply the `robolectric` plugin:
+Apply the `org.robolectric` plugin:
+
 ```groovy
-apply plugin: 'robolectric'
+apply plugin: 'org.robolectric'
 ```
 
-Add test-only dependencies using the `androidTestCompile` configuration:
+Add test-only dependencies using the `testCompile` configuration:
+
 ```groovy
-androidTestCompile 'junit:junit:4.12'
-androidTestCompile('org.robolectric:robolectric:2.4') {
-	exclude group: 'commons-logging', module: 'commons-logging'
-	exclude group: 'org.apache.httpcomponents', module: 'httpclient'
-}
+testCompile 'junit:junit:4.12'
+testCompile 'org.robolectric:robolectric:2.4'
 ```
 
-Place your tests in `src/test/java` or `src/androidTest/java` You can also add per-build type and per-flavor tests by using the same folder naming conventions (e.g., `src/testPaid/java`, `src/testDebug/java`).
-
-Run your tests by calling `gradle clean test`.
+Place your tests in `src/test/java`. You can also add per-build type and per-flavor tests by using the same folder naming conventions (e.g., `src/testPaid/java`, `src/testDebug/java`). Run your tests by calling `gradle clean test`. For more details, see the [unit testing](http://tools.android.com/tech-docs/unit-testing-support) docs for the Android Gradle plugin.
 
 ## Configuration using DSL
 
 ```groovy
 robolectric {
-    // configure the set of classes for JUnit tests
+    // Configure includes / excludes
     include '**/*Test.class'
     exclude '**/espresso/**/*.class'
 
-    // configure max heap size of the test JVM
+    // Configure max heap size of the test JVM
     maxHeapSize = '2048m'
 
-    // configure the test JVM arguments - Does not apply to Java 8
+    // Configure the test JVM arguments - Does not apply to Java 8
     jvmArgs '-XX:MaxPermSize=512m', '-XX:-UseSplitVerifier'
     
     // Specify max number of processes (default is 1)
@@ -74,26 +64,10 @@ robolectric {
 }
 ```
 
-## Importing into your IDE (IntelliJ or Android Studio)
-
-In a nutshell, you should be able to import into these IDEs (and continuously sync when you change your build.gradle). 
-
-It bears repeating, though: if you see the dreaded `Stub!` exception:
-
-    !!! JUnit version 3.8 or later expected:
-
-	java.lang.RuntimeException: Stub!
-	at junit.runner.BaseTestRunner.<init>(BaseTestRunner.java:5)
-	at junit.textui.TestRunner.<init>(TestRunner.java:54)
-	at junit.textui.TestRunner.<init>(TestRunner.java:48)
-	at junit.textui.TestRunner.<init>(TestRunner.java:41)
-
-...you will have to hand-edit your dependencies (in the IDE for IntelliJ, or hand-editing your IML file in Studio). See [deckard-gradle](https://github.com/robolectric/deckard-gradle) for details.
-
 ## License
 
     Copyright 2013 Square, Inc.
-              2014 Pivotal Labs
+              2014 - 2015 Pivotal Labs
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
