@@ -12,7 +12,7 @@ apply plugin: "groovy"
 apply plugin: "com.bmuschko.nexus"
 
 group = "org.robolectric"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0"
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -54,6 +54,14 @@ modifyPom {
         organization {
             name "Robolectric"
             url "http://robolectric.org"
+        }
+
+        developers {
+            developer {
+                id 'erich'
+                name 'Erich Douglass'
+                email 'erich@pivotallabs.com'
+            }
         }
     }
 }
