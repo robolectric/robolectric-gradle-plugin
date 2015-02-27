@@ -24,8 +24,7 @@ class RobolectricPlugin implements Plugin<Project> {
             }
 
             // Configure the test tasks
-            for (String name : configuration.getVariantNames()) {
-                def variant = configuration.getVariant(name)
+            configuration.variants.all { variant ->
                 def task = project.tasks.findByName("test${variant.name.capitalize()}")
 
                 // Set RobolectricTestRunner properties

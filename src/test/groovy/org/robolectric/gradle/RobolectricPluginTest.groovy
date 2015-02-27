@@ -127,6 +127,42 @@ class RobolectricPluginTest {
     }
 
     @Test
+    public void plugin_withFlavorDimensions_configuresTestTasks() {
+        final Project project = createProject()
+        project.android {
+            flavorDimensions "a", "B"
+            productFlavors {
+                a1 {
+                    flavorDimension "a"
+                }
+                A2 {
+                    flavorDimension "a"
+                }
+                B1 {
+                    flavorDimension "B"
+                }
+                b2 {
+                    flavorDimension "B"
+                }
+            }
+        }
+        project.evaluate()
+
+        def test_a1B1_Debug = project.tasks.getByName("testA1B1Debug")
+        assertThat(getPackage(test_a1B1_Debug)).isEqualTo("com.example")
+        assertThat(getAssetPath(test_a1B1_Debug)).endsWith("build/intermediates/assets/a1B1/debug")
+        assertThat(getResourcePath(test_a1B1_Debug)).endsWith("build/intermediates/res/a1B1/debug")
+        assertThat(getManifestPath(test_a1B1_Debug)).endsWith("build/intermediates/manifests/full/a1B1/debug/AndroidManifest.xml")
+
+        def test_A2b2_Release = project.tasks.getByName("testA2B2Release")
+        assertThat(getPackage(test_A2b2_Release)).isEqualTo("com.example")
+        assertThat(getAssetPath(test_A2b2_Release)).endsWith("build/intermediates/assets/A2b2/release")
+        assertThat(getResourcePath(test_A2b2_Release)).endsWith("build/intermediates/res/A2b2/release")
+        assertThat(getManifestPath(test_A2b2_Release)).endsWith("build/intermediates/manifests/full/A2b2/release/AndroidManifest.xml")
+
+    }
+
+    @Test
     public void configuration_supportsSettingAnExcludePattern() {
         final Project project = createProject()
         project.robolectric {
@@ -263,7 +299,7 @@ class RobolectricPluginTest {
     }
 
     @Test
-    public void configuration_supportsIngoreFailures() {
+    public void configuration_supportsIgnoreFailures() {
         final Project project = createProject()
         project.robolectric {
             ignoreFailures true

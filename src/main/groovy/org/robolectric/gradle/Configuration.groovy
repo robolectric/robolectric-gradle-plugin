@@ -44,34 +44,12 @@ class Configuration {
     }
 
     /**
-     * Return the all variant names.
+     * Return all variants.
      *
-     * @return  Collection of variant names.
+     * @return  Collection of variants.
      */
-    Collection<String> getVariantNames() {
-        def rval = new ArrayList<String>()
-        for (String type : getBuildTypeNames()) {
-            def flavors = getFlavorNames()
-            if (flavors.isEmpty()) {
-                rval.add("${type}")
-            } else {
-                for (String flavor : flavors) {
-                    rval.add("${flavor}${type.capitalize()}")
-                }
-            }
-        }
-        return rval
-    }
-
-    /**
-     * Return the given variant.
-     *
-     * @param   name    Variant name.
-     * @return  The specified variant.
-     */
-    BaseVariant getVariant(String name) {
-        def variants = hasAppPlugin ? project.android.applicationVariants : project.android.libraryVariants
-        return variants.find { variant -> return variant.name.equals(name) } as BaseVariant
+    Collection<BaseVariant> getVariants() {
+        return hasAppPlugin ? project.android.applicationVariants : project.android.libraryVariants
     }
 
     private Collection<String> getFlavorNames() {
