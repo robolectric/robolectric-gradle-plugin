@@ -6,7 +6,7 @@ jdk:
 
 android:
   components:
-    - build-tools-21.1.1
+    - build-tools-21.1.2
     - android-21
 
 script:
@@ -19,3 +19,9 @@ env:
   global:
     - secure: "gK+gJBrgA2yVj4EJYSSUp5mtIpgFDaHIzmA1bUa6OFYCZ5YcLEDf9lkIF0yDc5mkfV0zv6IIthklNO/DlElRscaKEUZBCbMwUB6kgikyyCrjxSr6mg9WxUA/GQQlIj0ADyXQHzBeox5U3HC3cOHFo4nqwk6A3W6iJyolbv4AJy4="
     - secure: "t4fgzcW1ws87dHtLCNNActocVQc1s1vP8EcW7coAn5gJyukyi3pZ8NyElE1Rb1pcO0/Jy4Jjax6YDJ5+uGUX+fpLlf4agBylSklY4zV+uU9DQGocgo0t/QVKUiVSHeWJWULvj8cCc8EG7s93vKYkS97AUnjgLntt0A+TN0oy9Jo="
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.gradle
