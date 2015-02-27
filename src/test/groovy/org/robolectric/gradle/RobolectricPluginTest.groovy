@@ -299,7 +299,7 @@ class RobolectricPluginTest {
         project.apply plugin: "org.robolectric"
         project.android {
             compileSdkVersion 21
-            buildToolsVersion "21.1.1"
+            buildToolsVersion "21.1.2"
 
             defaultConfig {
                 applicationId "com.example"
