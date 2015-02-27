@@ -15,7 +15,7 @@ Currently compatible with version 1.1.0 of the Android Gradle plugin.
 Add the plugin to your `buildscript`'s `dependencies` section:
 
 ```groovy
-classpath 'org.robolectric:robolectric-gradle-plugin:1.0.0'
+classpath 'org.robolectric:robolectric-gradle-plugin:1.0.1'
 ```
 
 Apply the `org.robolectric` plugin:
@@ -33,7 +33,7 @@ testCompile 'org.robolectric:robolectric:2.4'
 
 Place your tests in `src/test/java`. You can also add per-build type and per-flavor tests by using the same folder naming conventions (e.g., `src/testPaid/java`, `src/testDebug/java`). Run your tests by calling `gradle clean test`. For more details, see the [unit testing](http://tools.android.com/tech-docs/unit-testing-support) docs for the Android Gradle plugin.
 
-## Configuration using DSL
+## Configuration
 
 ```groovy
 robolectric {
