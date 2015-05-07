@@ -8,7 +8,7 @@ This plugin piggy-backs on the unit testing support added in version 1.1.0 of th
 
 ## Compatibility
 
-Currently compatible with version 1.1.0 of the Android Gradle plugin.
+Currently compatible with version 1.2.x of the Android Gradle plugin.
 
 ## Basic Usage
 
@@ -37,6 +37,15 @@ Place your tests in `src/test/java`. You can also add per-build type and per-fla
 
 ```groovy
 robolectric {
+    // configure whether unsupported versions should result in a failure
+    ignoreVersionCheck true
+}
+```
+
+Despite from the Robolectric-specific configurations you can also configure the underlying `Test` tasks via
+
+```groovy
+android.testOptions.unitTests.all {
     // Configure includes / excludes
     include '**/*Test.class'
     exclude '**/espresso/**/*.class'
@@ -46,10 +55,10 @@ robolectric {
 
     // Configure the test JVM arguments - Does not apply to Java 8
     jvmArgs '-XX:MaxPermSize=512m', '-XX:-UseSplitVerifier'
-    
+
     // Specify max number of processes (default is 1)
     maxParallelForks = 4
-    
+
     // Specify max number of test classes to execute in a test process
     // before restarting the process (default is unlimited)
     forkEvery = 150
@@ -63,6 +72,8 @@ robolectric {
     }
 }
 ```
+
+See the [DSL reference][1] for more information.
 
 ## License
 
@@ -81,3 +92,4 @@ robolectric {
     See the License for the specific language governing permissions and
     limitations under the License.
 
+ [1]: http://gradle.org/docs/current/dsl/org.gradle.api.tasks.testing.Test.html
