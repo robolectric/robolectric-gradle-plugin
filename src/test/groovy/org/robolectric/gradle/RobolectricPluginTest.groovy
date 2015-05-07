@@ -70,6 +70,12 @@ class RobolectricPluginTest {
         project.evaluate()
     }
 
+    @Test(expected = ProjectConfigurationException.class)
+    public void plugin_failsWithFutureAndroidPlugin() {
+        final Project project = createProject("com.android.tools.build:gradle:1.3.0")
+        project.evaluate()
+    }
+
     @Test
     public void plugin_configuresTestTasks() {
         final Project project = createProject()

@@ -8,7 +8,7 @@ This plugin piggy-backs on the unit testing support added in version 1.1.0 of th
 
 ## Compatibility
 
-Currently compatible with version 1.1.0 of the Android Gradle plugin.
+Currently compatible with version 1.1.x and 1.2.x of the Android Gradle plugin.
 
 ## Basic Usage
 
