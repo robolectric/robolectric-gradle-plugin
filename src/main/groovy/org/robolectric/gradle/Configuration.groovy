@@ -12,7 +12,7 @@ class Configuration {
     private final Project project
     private final boolean hasAppPlugin
     private final boolean hasLibPlugin
-    private static final String[] SUPPORTED_ANDROID_VERSIONS = ['1.1.']
+    private static final String[] SUPPORTED_ANDROID_VERSIONS = ['1.1.', '1.2.']
 
     /**
      * Class constructor.
