@@ -45,14 +45,26 @@ class RobolectricPluginTest {
     }
 
     @Test(expected = ProjectConfigurationException.class)
-    public void plugin_failsWithOutdatedAndroidPlugin() {
+    public void plugin_failsWithOutdatedAndroidPlugin_0120() {
         final Project project = createProject("com.android.tools.build:gradle:0.12.0")
+        project.evaluate()
+    }
+
+    @Test(expected = ProjectConfigurationException.class)
+    public void plugin_failsWithOutdatedAndroidPlugin_100() {
+        final Project project = createProject("com.android.tools.build:gradle:1.0.0")
+        project.evaluate()
+    }
+
+    @Test(expected = ProjectConfigurationException.class)
+    public void plugin_failsWithOutdatedAndroidPlugin_110() {
+        final Project project = createProject("com.android.tools.build:gradle:1.1.0")
         project.evaluate()
     }
 
     @Test
     public void plugin_acceptsOutdatedAndroidPluginByExtension() {
-        final Project project = createProject("com.android.tools.build:gradle:0.12.0")
+        final Project project = createProject("com.android.tools.build:gradle:1.1.0")
         project.robolectric {
             ignoreVersionCheck true
         }
@@ -190,19 +202,19 @@ class RobolectricPluginTest {
         return project
     }
 
-    private static String getPackage(Task testDebug) {
-        return testDebug.getSystemProperties().get("android.package")
+    private static String getPackage(Task task) {
+        return task.systemProperties.get("android.package")
     }
 
     private static String getAssetPath(Task task) {
-        return task.getSystemProperties().get("android.assets").getPath()
+        return task.systemProperties.get("android.assets").getPath()
     }
 
     private static String getManifestPath(Task task) {
-        return task.getSystemProperties().get("android.manifest").getPath()
+        return task.systemProperties.get("android.manifest").getPath()
     }
 
     private static String getResourcePath(Task task) {
-        return task.getSystemProperties().get("android.resources").getPath()
+        return task.systemProperties.get("android.resources").getPath()
     }
 }

@@ -9,10 +9,10 @@ import org.gradle.api.Project
  * Class used to obtain information about the project configuration.
  */
 class Configuration {
+    private static final String[] UNSUPPORTED_ANDROID_VERSIONS = ['0.', '1.0.', '1.1.']
     private final Project project
     private final boolean hasAppPlugin
     private final boolean hasLibPlugin
-    private static final String[] SUPPORTED_ANDROID_VERSIONS = ['1.2.']
 
     Configuration(Project project) {
         this.project = project
@@ -32,7 +32,7 @@ class Configuration {
             it.group != null && it.group.equals('com.android.tools.build') && it.name.equals('gradle')
         }
 
-        if (androidGradlePlugin != null && !checkVersion(androidGradlePlugin.version)) {
+        if (androidGradlePlugin != null && isUnsupported(androidGradlePlugin.version)) {
             throw new IllegalStateException("robolectric-gradle-plugin: The Android Gradle plugin ${androidGradlePlugin.version} is not supported.")
         }
     }
@@ -46,9 +46,9 @@ class Configuration {
         return hasAppPlugin ? project.android.applicationVariants : project.android.libraryVariants
     }
 
-    private static boolean checkVersion(String version) {
-        for (String supportedVersion : SUPPORTED_ANDROID_VERSIONS) {
-            if (version.startsWith(supportedVersion)) {
+    private static boolean isUnsupported(String version) {
+        for (def unsupportedVersion : UNSUPPORTED_ANDROID_VERSIONS) {
+            if (version.startsWith(unsupportedVersion)) {
                 return true
             }
         }
