@@ -10,17 +10,9 @@ class RobolectricPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        // Create the test extension
-        def extension = project.extensions.create('robolectric', RobolectricExtension)
-
         // Configure the project
         def configuration = new Configuration(project)
         project.afterEvaluate {
-            // Verify the plugin version
-            if (!extension.ignoreVersionCheck) {
-                configuration.validate()
-            }
-
             // Configure the test tasks
             configuration.variants.all { variant ->
                 def taskName = "test${variant.name.capitalize()}"

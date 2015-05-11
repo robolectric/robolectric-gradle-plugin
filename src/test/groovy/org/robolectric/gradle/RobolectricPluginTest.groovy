@@ -1,7 +1,6 @@
 package org.robolectric.gradle
 
 import org.gradle.api.Project
-import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.Task
 import org.gradle.api.internal.plugins.PluginApplicationException
 import org.gradle.testfixtures.ProjectBuilder
@@ -42,39 +41,6 @@ class RobolectricPluginTest {
         final Project project = ProjectBuilder.builder().build()
         project.apply plugin: "extended-android"
         project.apply plugin: "org.robolectric"
-    }
-
-    @Test(expected = ProjectConfigurationException.class)
-    public void plugin_failsWithOutdatedAndroidPlugin_0120() {
-        final Project project = createProject("com.android.tools.build:gradle:0.12.0")
-        project.evaluate()
-    }
-
-    @Test(expected = ProjectConfigurationException.class)
-    public void plugin_failsWithOutdatedAndroidPlugin_100() {
-        final Project project = createProject("com.android.tools.build:gradle:1.0.0")
-        project.evaluate()
-    }
-
-    @Test(expected = ProjectConfigurationException.class)
-    public void plugin_failsWithOutdatedAndroidPlugin_110() {
-        final Project project = createProject("com.android.tools.build:gradle:1.1.0")
-        project.evaluate()
-    }
-
-    @Test
-    public void plugin_acceptsOutdatedAndroidPluginByExtension() {
-        final Project project = createProject("com.android.tools.build:gradle:1.1.0")
-        project.robolectric {
-            ignoreVersionCheck true
-        }
-        project.evaluate()
-    }
-
-    @Test
-    public void plugin_acceptsSupportedAndroidPlugin() {
-        final Project project = createProject("com.android.tools.build:gradle:1.2.0")
-        project.evaluate()
     }
 
     @Test
@@ -140,16 +106,16 @@ class RobolectricPluginTest {
             flavorDimensions "a", "B"
             productFlavors {
                 a1 {
-                    flavorDimension "a"
+                    dimension "a"
                 }
                 A2 {
-                    flavorDimension "a"
+                    dimension "a"
                 }
                 B1 {
-                    flavorDimension "B"
+                    dimension "B"
                 }
                 b2 {
-                    flavorDimension "B"
+                    dimension "B"
                 }
             }
         }
@@ -170,26 +136,8 @@ class RobolectricPluginTest {
     }
 
     private static Project createProject() {
-        return createProject("com.android.application", null)
-    }
-
-    private static Project createProject(String androidVersion) {
-        return createProject("com.android.application", {
-            repositories {
-                mavenCentral()
-            }
-            dependencies {
-                classpath androidVersion
-            }
-        })
-    }
-
-    private static Project createProject(String plugin, Closure buildscript) {
         final Project project = ProjectBuilder.builder().build()
-        if (buildscript) {
-            project.buildscript buildscript
-        }
-        project.apply plugin: plugin
+        project.apply plugin: "com.android.application"
         project.apply plugin: "org.robolectric"
         project.android {
             compileSdkVersion 22
