@@ -35,14 +35,7 @@ Place your tests in `src/test/java`. You can also add per-build type and per-fla
 
 ## Configuration
 
-```groovy
-robolectric {
-    // configure whether unsupported versions should result in a failure
-    ignoreVersionCheck true
-}
-```
-
-Despite from the Robolectric-specific configurations you can also configure the underlying `Test` tasks via
+The underlying `Test` tasks can be configured via
 
 ```groovy
 android.testOptions.unitTests.all {
