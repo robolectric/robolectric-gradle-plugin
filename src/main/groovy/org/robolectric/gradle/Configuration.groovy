@@ -3,6 +3,7 @@ package org.robolectric.gradle
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.api.BaseVariant
+import org.gradle.api.DomainObjectCollection
 import org.gradle.api.Project
 
 /**
@@ -28,7 +29,7 @@ class Configuration {
      *
      * @return Collection of variants.
      */
-    Collection<BaseVariant> getVariants() {
+    DomainObjectCollection<BaseVariant> getVariants() {
         return hasAppPlugin ? project.android.applicationVariants : project.android.libraryVariants
     }
 }
