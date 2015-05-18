@@ -15,7 +15,7 @@ Currently compatible with version 1.2.x of the Android Gradle plugin.
 Add the plugin to your `buildscript`'s `dependencies` section:
 
 ```groovy
-classpath 'org.robolectric:robolectric-gradle-plugin:1.0.1'
+classpath 'org.robolectric:robolectric-gradle-plugin:1.1.0'
 ```
 
 Apply the `org.robolectric` plugin:
