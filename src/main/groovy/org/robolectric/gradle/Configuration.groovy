@@ -15,8 +15,8 @@ class Configuration {
 
     Configuration(Project project) {
         this.project = project
-        this.hasAppPlugin = project.plugins.find { p -> p instanceof AppPlugin }
-        this.hasLibPlugin = project.plugins.find { p -> p instanceof LibraryPlugin }
+        this.hasAppPlugin = project.plugins.any { p -> p instanceof AppPlugin }
+        this.hasLibPlugin = project.plugins.any { p -> p instanceof LibraryPlugin }
 
         if (!hasAppPlugin && !hasLibPlugin) {
             throw new IllegalStateException("robolectric-gradle-plugin: The 'com.android.application' or 'com.android.library' plugin is required.")
