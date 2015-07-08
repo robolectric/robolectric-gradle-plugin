@@ -1,6 +1,5 @@
 package org.robolectric.gradle
 
-import com.android.build.gradle.api.BaseVariant
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
@@ -14,28 +13,27 @@ class RobolectricPlugin implements Plugin<Project> {
     void apply(Project project) {
         // Configure the project
         def configuration = new Configuration(project)
-        project.afterEvaluate {
-            // Configure the test tasks
-            configuration.variants.all { BaseVariant variant ->
-                def taskName = "test${variant.name.capitalize()}"
-                def assets = variant.mergeAssets.outputDir
-                def manifest = variant.outputs.first().processManifest.manifestOutputFile
-                def resources = variant.mergeResources.outputDir
-                def packageName = project.android.defaultConfig.applicationId
 
-                // Set RobolectricTestRunner properties
-                def task = project.tasks.findByName(taskName) as Test
-                task.systemProperty "android.assets", assets
-                task.systemProperty "android.manifest", manifest
-                task.systemProperty "android.resources", resources
-                task.systemProperty "android.package", packageName
+        // Configure the test tasks
+        configuration.variants.all { variant ->
+            def taskName = "test${variant.name.capitalize()}"
+            def assets = variant.mergeAssets.outputDir
+            def manifest = variant.outputs.first().processManifest.manifestOutputFile
+            def resources = variant.mergeResources.outputDir
+            def packageName = project.android.defaultConfig.applicationId
 
-                project.logger.info("Configuring task: ${taskName}")
-                project.logger.info("Robolectric assets: ${assets}")
-                project.logger.info("Robolectric manifest: ${manifest}")
-                project.logger.info("Robolectric resources: ${resources}")
-                project.logger.info("Robolectric package: ${packageName}")
-            }
+            // Set RobolectricTestRunner properties
+            def task = project.tasks.findByName(taskName) as Test
+            task.systemProperty "android.assets", assets
+            task.systemProperty "android.manifest", manifest
+            task.systemProperty "android.resources", resources
+            task.systemProperty "android.package", packageName
+
+            project.logger.info("Configuring task: ${taskName}")
+            project.logger.info("Robolectric assets: ${assets}")
+            project.logger.info("Robolectric manifest: ${manifest}")
+            project.logger.info("Robolectric resources: ${resources}")
+            project.logger.info("Robolectric package: ${packageName}")
         }
     }
 }
